@@ -6,7 +6,7 @@ from Character import Character
 from PopUp import PopUp
 from Skills import Skills
 from Spells import Spells
-from Feats import Feats
+from feats import Feats
 
 class CharacterCreator(object):
 	def __init__(self):
@@ -81,12 +81,11 @@ class CharacterCreator(object):
 		self.skillsP = None
 		self.spellsP = None
 		self.featsP = None
-
+		
 		self.rollList = []
 		self.languagelist = []
 		self.unrollDict = {}
 		self.backupRollList = []
-		
 		
 		self.langcount = 0
 		#for key in self.abil.keys():
@@ -123,6 +122,7 @@ class CharacterCreator(object):
 		self.drawSkillsSpellsFeats()
 		self.drawSpecialFeats()
 		self.drawLanguages()
+		
 		self.update()
 		
 	def drawline1(self):
@@ -530,7 +530,7 @@ class CharacterCreator(object):
 	def skillsPage(self):
 		if not self.skillsP:
 			self.skillsP = Toplevel(self.root)
-			Skills(self.skillsP, self.Mabil)
+			Skills(self.skillsP, self.Mabil, self.char)
 		else:
 			self.skillsP.deiconify()		
 			
@@ -817,6 +817,10 @@ class CharacterCreator(object):
 		self.updateGrapple()
 		self.resetAbil()
 		
+		if self.skillsP:
+				self.skillsP.destroy()
+				self.skillsP = None
+				
 	def remakeClass(self):
 		del self.char
 		self.char = Character(self.Race.get(), self.cClass.get())	

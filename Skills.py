@@ -4,7 +4,7 @@ import ttk
 import tkMessageBox as msg
 
 class Skills(object):
-	def __init__(self, root, abilities):
+	def __init__(self, root, abilities, character):
 		self.root = root
 		self.canvas = tk.Canvas(root)
 		self.frame = tk.Frame(self.canvas)
@@ -20,6 +20,7 @@ class Skills(object):
 		self.root.title("Skills")
 		self.root.geometry("700x800")
 		self.Mabil = abilities
+		self.char = character
 		self.createVars()
 		self.draw()
 		
@@ -77,6 +78,9 @@ class Skills(object):
 							#"Other(3)": ''
 							}
 		self.SkillSet = set(self.SkillList)
+		self.onoff = {}
+		for key in self.SkillSet:
+			self.onoff[key] = self.cbonoff(key)
 		self.TotalMod = {}
 		self.Ranks = {}
 		self.MiscMod = {}
@@ -130,14 +134,14 @@ class Skills(object):
 	def drawEverythingElse(self):
 		for i, item in enumerate(sorted(self.SkillList.keys())):
 			#make everything
-			self.CBskill[item] 		= Checkbutton(self.frame, state=DISABLED) # checkboxes
+			self.CBskill[item] 		= Checkbutton(self.frame, state=DISABLED, variable=self.onoff[item]) # checkboxes
 			self.Bskillname[item] 	= Button(self.frame, relief=GROOVE, anchor=W,  width=18, text=item) # skill names
 			self.Lkeyabil[item] 	= Label(self.frame,  width=4, text=self.SkillList[item])
 			self.EskillMod[item] 	= Entry(self.frame,  width=3, state=DISABLED, justify=CENTER, textvariable=self.TotalMod[item])
 			self.LEquals[item]		= Label(self.frame,  width=2, text='=')
 			self.EabilMod[item] 	= Entry(self.frame,  width=3, state=DISABLED, justify=CENTER, textvariable=self.Mabil[self.SkillList[item].strip('*')])
 			self.LPlusOne[item]		= Label(self.frame,  width=2, text='+')
-			self.CMBranks[item]		= ttk.Combobox(self.frame, width=5, values='', textvariable=self.Ranks[item])
+			self.CMBranks[item]		= ttk.Combobox(self.frame, width=5, values=self.UpdateRankList(item), textvariable=self.Ranks[item])
 			self.LPlusTwo[item]		= Label(self.frame,  width=2, text='+')
 			self.EmiscMod[item] 	= Entry(self.frame,  width=3, justify=CENTER, textvariable=self.MiscMod[item])
 			
@@ -152,6 +156,7 @@ class Skills(object):
 			self.CMBranks[item].grid(	row = i+1, column=7, sticky=E+W)
 			self.LPlusTwo[item].grid(	row = i+1, column=8, sticky=E+W)
 			self.EmiscMod[item].grid(	row = i+1, column=9, sticky=E+W)
+			#print self.CMBranks[item]
 			
 	def bind(self):
 		self.CMBvar.bind("<<ComboboxSelected>>", self.setvar)
@@ -168,9 +173,25 @@ class Skills(object):
 		
 	def setbind(self):
 		for item in self.SkillSet:
-			self.CMBranks[item].bind("<<ComboboxSelected>>", lambda event: self.updateSkills(event, item))
-			
+			#self.CMBranks[item].bind("<<ComboboxSelected>>", lambda event: self.updateSkills(event, item))
+			self.CMBranks['Appraise'].bind("<<ComboboxSelected>>", lambda event: self.updateSkills(event, 'Appraise'))
+
+	def cbonoff(self, skillname):
+		print skillname
+		if skillname in self.char.classSkills:
+			ret = IntVar()
+			ret.set(1)
+			return ret
+		else:
+			return IntVar()
+	
+	def UpdateRankList(self, skillname):
+		if skillname in self.char.classSkills:
+			return [i for i in xrange(self.char.characterLevel+4)]
+		else:
+			return [i for i in xrange((self.char.characterLevel+3)/2+1)]
+	
 	def updateSkills(self, args, key):
 		print key
-			
+		print args
 			
