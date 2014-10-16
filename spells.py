@@ -13,7 +13,7 @@ class Spells(object):
 	
 	def createVars(self):
 		self.var = StringVar()
-		
+
 	def draw(self):
 		self.drawHeader()
 		self.update()
