@@ -23,7 +23,7 @@ class Skills(object):
 		self.char = character
 		self.createVars()
 		self.draw()
-		
+				
 	def OnFrameConfigure(self, event):
         #'''Reset the scroll region to encompass the inner frame'''
 		self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -106,6 +106,8 @@ class Skills(object):
 	def draw(self):
 		self.drawHeader()
 		self.drawEverythingElse()
+		self.drawEmptyCol()
+		self.drawButtons()
 		self.update()
 		
 	def update(self):
@@ -158,10 +160,23 @@ class Skills(object):
 			self.EmiscMod[item].grid(	row = i+1, column=9, sticky=E+W)
 			#print self.CMBranks[item]
 
-	def drawButton(self):
-		self.Bclose = Button(self.root, text="Save Close", command=self.saveClose)
-		self.Bclose.grid(row=0, column=3)
+	def drawEmptyCol(self):
+		self.EmptyCol = Label(self.frame, width=15)
+		self.EmptyCol.grid(row=0, column=10)
 		
+	def drawButtons(self):
+		self.Bclose = Button(self.frame, text="Save Close", command=self.saveClose)
+		self.Bclose.grid(row=0, column=11)
+		self.Breset = Button(self.frame, text="Reset", command=self.reset)
+		self.Breset.grid(row=1, column=11)
+	
+	def reset(self):
+		for skill in self.SkillSet:
+			self.CMBranks[skill].set('')
+			self.Ranks[skill].set('')
+			self.MiscMod[skill].set('')
+			self.updateSkills('', skill)
+			
 	def saveClose(self):
 		self.root.withdraw()
 		
@@ -199,4 +214,6 @@ class Skills(object):
 			setval += int(self.MiscMod[key].get())
 		if setval > 0:
 			self.TotalMod[key].set(setval)
+		else:
+			self.TotalMod[key].set('')
 			
