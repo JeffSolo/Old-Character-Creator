@@ -668,18 +668,23 @@ class CharacterCreator(object):
 		#self.root.bind("<Button-1>", self.clickd)
 		
 	def abilBind(self):
-		self.CMBabil['STR'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'STR'))
-		#self.CMBabil['STR'].bind("<Leave>", lambda event: self.updateAbilities(event, 'STR'))
-		self.CMBabil['DEX'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'DEX'))
-		#self.CMBabil['DEX'].bind("<Leave>", lambda event: self.updateAbilities(event, 'DEX'))
-		self.CMBabil['CON'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'CON'))
-		#self.CMBabil['CON'].bind("<Leave>", lambda event: self.updateAbilities(event, 'CON'))
-		self.CMBabil['INT'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'INT'))
-		#self.CMBabil['INT'].bind("<Leave>", lambda event: self.updateAbilities(event, 'INT'))
-		self.CMBabil['WIS'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'WIS'))
-		#self.CMBabil['WIS'].bind("<Leave>", lambda event: self.updateAbilities(event, 'WIS'))
-		self.CMBabil['CHA'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'CHA'))
-		#self.CMBabil['CHA'].bind("<Leave>", lambda event: self.updateAbilities(event, 'CHA'))
+		#self.CMBabil['STR'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'STR'))
+		##self.CMBabil['STR'].bind("<Leave>", lambda event: self.updateAbilities(event, 'STR'))
+		#self.CMBabil['DEX'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'DEX'))
+		##self.CMBabil['DEX'].bind("<Leave>", lambda event: self.updateAbilities(event, 'DEX'))
+		#self.CMBabil['CON'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'CON'))
+		##self.CMBabil['CON'].bind("<Leave>", lambda event: self.updateAbilities(event, 'CON'))
+		#self.CMBabil['INT'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'INT'))
+		##self.CMBabil['INT'].bind("<Leave>", lambda event: self.updateAbilities(event, 'INT'))
+		#self.CMBabil['WIS'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'WIS'))
+		##self.CMBabil['WIS'].bind("<Leave>", lambda event: self.updateAbilities(event, 'WIS'))
+		#self.CMBabil['CHA'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'CHA'))
+		##self.CMBabil['CHA'].bind("<Leave>", lambda event: self.updateAbilities(event, 'CHA'))
+		for abil in self.CMBabil.keys():
+			self.CMBabil[abil].bind("<<ComboboxSelected>>", self.makeLambda(abil))
+		
+	def makeLambda(self, skill):
+		return lambda event: self.updateAbilities(event, skill)
 		
 	def acBind(self):
 		self.Eac2.bind("<Leave>", self.updateAC)

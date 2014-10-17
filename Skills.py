@@ -172,18 +172,19 @@ class Skills(object):
 		self.root.withdraw()
 		
 	def setbind(self):
-		for item in self.SkillSet:
-			#self.CMBranks[item].bind("<<ComboboxSelected>>", lambda event: self.updateSkills(event, item))
-			self.CMBranks['Appraise'].bind("<<ComboboxSelected>>", lambda event: self.updateSkills(event, 'Appraise'))
-
+		for skill in self.SkillSet:
+			self.CMBranks[skill].bind("<<ComboboxSelected>>", self.makeLambda(skill))
+	
+	def makeLambda(self, skill):
+		return lambda event: self.updateSkills(event, skill)
+		
 	def cbonoff(self, skillname):
-		print skillname
+		ret = IntVar()
 		if skillname in self.char.classSkills:
-			ret = IntVar()
 			ret.set(1)
 			return ret
 		else:
-			return IntVar()
+			return ret
 	
 	def UpdateRankList(self, skillname):
 		if skillname in self.char.classSkills:
@@ -192,6 +193,11 @@ class Skills(object):
 			return [i for i in xrange((self.char.characterLevel+3)/2+1)]
 	
 	def updateSkills(self, args, key):
-		print key
-		print args
+		if not self.Mabil[self.SkillList[key].strip('*')].get():
+			self.Mabil[self.SkillList[key].strip('*')].set(0)
+		setval = int(self.Ranks[key].get())+int(self.Mabil[self.SkillList[key].strip('*')].get())
+		if self.MiscMod[key].get():
+			print self.MiscMod[key]
+			setval += int(self.MiscMod[key].get())
+		self.TotalMod[key].set(setval)
 			
