@@ -99,7 +99,7 @@ class Classes(object):
 		self.special=["Bonus Feat"]
 		self.hitDie = 10
 		self.classSkills=["Climb", "Craft", "Handle Animal", "Jump", "Ride", "Swim"]
-		#self.skillPoints=(2+int)*4 # just use 2? 
+		self.classSkillPoints=2#(2+int)*4 # just use 2? 
 		#self.skillPointsOnLevel = 2+int
 	
 	def anyAlign(self):

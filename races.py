@@ -76,7 +76,8 @@ class Races(object):
 		self.favClass = "Any"
 		self.bonusSkills = None
 		self.bonusFeat = 1
-		self.extraSkillPoints = 4
+		self.baseRaceSkillPoints = 4
+		self.levelRaceSkillPoints= 1
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None

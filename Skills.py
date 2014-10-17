@@ -170,7 +170,6 @@ class Skills(object):
 			self.CMBranks[skill].bind("<<ComboboxSelected>>", self.makeLambda(skill))
 			self.EmiscMod[skill].bind("<FocusOut>", self.makeLambda(skill)) 
 			self.EmiscMod[skill].bind("<KeyRelease>", self.makeLambda(skill)) 
-			
 	
 	def makeLambda(self, skill):
 		return lambda event: self.updateSkills(event, skill)
