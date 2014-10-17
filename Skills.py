@@ -157,13 +157,7 @@ class Skills(object):
 			self.LPlusTwo[item].grid(	row = i+1, column=8, sticky=E+W)
 			self.EmiscMod[item].grid(	row = i+1, column=9, sticky=E+W)
 			#print self.CMBranks[item]
-			
-	def bind(self):
-		self.CMBvar.bind("<<ComboboxSelected>>", self.setvar)
-	
-	def setvar(self):
-		self.var.set(self.var.get())
-		
+
 	def drawButton(self):
 		self.Bclose = Button(self.root, text="Save Close", command=self.saveClose)
 		self.Bclose.grid(row=0, column=3)
