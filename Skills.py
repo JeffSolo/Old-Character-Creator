@@ -168,6 +168,9 @@ class Skills(object):
 	def setbind(self):
 		for skill in self.SkillSet:
 			self.CMBranks[skill].bind("<<ComboboxSelected>>", self.makeLambda(skill))
+			self.EmiscMod[skill].bind("<FocusOut>", self.makeLambda(skill)) 
+			self.EmiscMod[skill].bind("<KeyRelease>", self.makeLambda(skill)) 
+			
 	
 	def makeLambda(self, skill):
 		return lambda event: self.updateSkills(event, skill)
@@ -186,12 +189,15 @@ class Skills(object):
 		else:
 			return [i for i in xrange((self.char.characterLevel+3)/2+1)]
 	
+	# Could make different functions for setbind, so we don't have to do multiple checks each time
 	def updateSkills(self, args, key):
-		if not self.Mabil[self.SkillList[key].strip('*')].get():
-			self.Mabil[self.SkillList[key].strip('*')].set(0)
-		setval = int(self.Ranks[key].get())+int(self.Mabil[self.SkillList[key].strip('*')].get())
-		if self.MiscMod[key].get():
-			print self.MiscMod[key]
+		setval = 0
+		if self.Mabil[self.SkillList[key].strip('*')].get().isdigit():
+			setval += int(self.Mabil[self.SkillList[key].strip('*')].get())
+		if self.Ranks[key].get().isdigit():
+			setval += int(self.Ranks[key].get())
+		if self.MiscMod[key].get().isdigit():
 			setval += int(self.MiscMod[key].get())
-		self.TotalMod[key].set(setval)
+		if setval > 0:
+			self.TotalMod[key].set(setval)
 			
