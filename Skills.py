@@ -2,6 +2,7 @@ from Tkinter import *
 import Tkinter as tk
 import ttk
 import tkMessageBox as msg
+from PopUp import PopUp
 
 class Skills(object):
 	def __init__(self, root, abilities, character):
@@ -108,7 +109,7 @@ class Skills(object):
 			self.Ranks[key] 	 = StringVar()
 			self.MiscMod[key]	 = StringVar()
 			self.classSkill[key] = StringVar()
-
+		self.flag = False
 		
 	def draw(self):
 		self.drawHeader()
@@ -190,7 +191,8 @@ class Skills(object):
 		self.BspRemaining.grid(row = 17, column=11)
 		self.Lremainingsp.grid(row = 18, column=11)
 		
-	def calcsp(self, *arg):
+	
+	def calcsp(self,  *arg):
 		skillpoints = 0
 		if self.char.classSkillPoints and self.Mabil['INT'].get():
 			skillpoints += (self.char.classSkillPoints+int(self.Mabil['INT'].get()))*4
@@ -199,6 +201,13 @@ class Skills(object):
 		if self.char.baseRaceSkillPoints:
 			skillpoints += self.char.baseRaceSkillPoints
 		self.NumSP.set(str(skillpoints))
+		self.calcRemaingingSP()
+		if self.RemaingingSP.get() < 0 and self.flag == False:
+			self.flag = True
+			self.reset()
+			PopUp().error('','Too many skill points assigned, resetting')		
+			self.flag = False
+			
 	
 	def reset(self):
 		self.calcsp()
@@ -210,7 +219,6 @@ class Skills(object):
 			self.MiscMod[skill].set('')
 			self.TotalMod[skill].set('')
 			#self.updateSkills('', skill)
-			
 			
 	def saveClose(self):
 		self.root.withdraw()
@@ -247,6 +255,8 @@ class Skills(object):
 			setval += int(self.Mabil[self.SkillList[key].strip('*')].get())
 		if self.Ranks[key].get().isdigit():
 			self.calcRemaingingSP()
+			for skill in self.SkillSet: 
+				self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
 			setval += int(self.Ranks[key].get())
 		if self.MiscMod[key].get().isdigit():
 			setval += int(self.MiscMod[key].get())
@@ -260,6 +270,5 @@ class Skills(object):
 		for skill in self.SkillSet:
 			if self.Ranks[skill].get().isdigit():
 				rem += int(self.Ranks[skill].get())
-		self.RemaingingSP.set(self.NumSP.get() - rem)
-		for skill in self.SkillSet: 
-			self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
+		return self.RemaingingSP.set(self.NumSP.get() - rem)
+		

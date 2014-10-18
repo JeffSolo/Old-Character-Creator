@@ -14,3 +14,6 @@ class PopUp(object):
 		
 	def warn(self, label, err):
 		msg.showwarning(label, err)
+	
+	def error(self, label, err):
+		msg.showerror(label, err)

@@ -23,7 +23,7 @@ class CharacterCreator(object):
 		self.hp =    StringVar()
 		self.baseAtk=StringVar()
 		self.spellRes= StringVar()
-		self.Languages = StringVar()
+		self.Languages = StringVar() 
 		self.speed = IntVar()
 		
 		self.Abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']
@@ -814,8 +814,10 @@ class CharacterCreator(object):
 		
 	def resetSkillsPage(self):
 		if self.skillsP:
-				self.skillsP.destroy()
-				self.skillsP = None
+			print "Y"
+			self.skillsP.reset()
+				#self.skillsP.destroy()
+				#self.skillsP = None
 		
 	def clickd(self, *args):
 		if self.char.size:
