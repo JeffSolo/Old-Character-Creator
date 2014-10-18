@@ -21,9 +21,10 @@ class Skills(object):
 		self.root.geometry("700x800")
 		self.Mabil = abilities
 		self.char = character
-		self.createVars()
+		self.createVars()		
+		self.initsp()
 		self.draw()
-				
+		
 	def OnFrameConfigure(self, event):
         #'''Reset the scroll region to encompass the inner frame'''
 		self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -176,8 +177,9 @@ class Skills(object):
 		
 	def drawSkillPointinfo(self):
 		self.Btotalsp = Button(self.frame, relief=GROOVE, text="Skill Points")
+		self.BspRemaining = Button(self.frame,relief=GROOVE, text="Skill Points Remaining")
+		
 		self.Ltotalsp = Label(self.frame, width=6, textvariable=self.NumSP)
-		self.BspRemaining = Button(self.frame, text="Skill Points Remaining")
 		self.Lremainingsp = Label(self.frame, width=6, textvariable=self.RemaingingSP)
 		
 		self.Btotalsp.grid(row = 5, column=11)
@@ -185,12 +187,24 @@ class Skills(object):
 		self.BspRemaining.grid(row = 7, column=11)
 		self.Lremainingsp.grid(row = 8, column=11)
 		
+	def initsp(self):
+		skillpoints = 0
+		if self.char.classSkillPoints:
+			skillpoints += self.char.classSkillPoints
+		if self.char.baseRaceSkillPoints:
+			skillpoints += self.char.baseRaceSkillPoints
+		if skillpoints < 4:
+			skillpoints = 4		
+		self.NumSP.set(str(skillpoints))
+		self.RemaingingSP.set(self.NumSP.get())
+	
 	def reset(self):
 		for skill in self.SkillSet:
 			self.CMBranks[skill].set('')
 			self.Ranks[skill].set('')
 			self.MiscMod[skill].set('')
 			self.updateSkills('', skill)
+		self.RemaingingSP.set(self.NumSP.get())
 			
 	def saveClose(self):
 		self.root.withdraw()
@@ -212,18 +226,19 @@ class Skills(object):
 		else:
 			return ret
 	
-	def UpdateRankList(self, skillname):
+	def UpdateRankList(self, skillname):		
 		if skillname in self.char.classSkills:
-			return [i for i in xrange(self.char.characterLevel+4)]
+			return [i for i in xrange(min(self.char.characterLevel+4, self.RemaingingSP.get()+1))] #+1 since xrange is noninclusive
 		else:
-			return [i for i in xrange((self.char.characterLevel+3)/2+1)]
-	
+			return [i for i in xrange(min((self.char.characterLevel+3)/2+1, self.RemaingingSP.get()+1))]  #+1 since xrange is noninclusive
+
 	# Could make different functions for setbind, so we don't have to do multiple checks each time
 	def updateSkills(self, args, key):
 		setval = 0
 		if self.Mabil[self.SkillList[key].strip('*')].get().isdigit():
 			setval += int(self.Mabil[self.SkillList[key].strip('*')].get())
 		if self.Ranks[key].get().isdigit():
+			self.calcRemaingingSP()
 			setval += int(self.Ranks[key].get())
 		if self.MiscMod[key].get().isdigit():
 			setval += int(self.MiscMod[key].get())
@@ -231,4 +246,12 @@ class Skills(object):
 			self.TotalMod[key].set(setval)
 		else:
 			self.TotalMod[key].set('')
-			
+		
+	def calcRemaingingSP(self):
+		rem = 0
+		for skill in self.SkillSet:
+			if self.Ranks[skill].get().isdigit():
+				rem += int(self.Ranks[skill].get())
+		self.RemaingingSP.set(self.NumSP.get() - rem)
+		for skill in self.SkillSet: 
+			self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
