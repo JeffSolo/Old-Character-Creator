@@ -22,7 +22,7 @@ class Skills(object):
 		self.Mabil = abilities
 		self.char = character
 		self.createVars()		
-		self.initsp()
+		self.calcsp()
 		self.draw()
 		
 	def _on_mousewheel(self, event):
@@ -190,7 +190,7 @@ class Skills(object):
 		self.BspRemaining.grid(row = 7, column=11)
 		self.Lremainingsp.grid(row = 8, column=11)
 		
-	def initsp(self):
+	def calcsp(self, *arg):
 		skillpoints = 0
 		if self.char.classSkillPoints and self.Mabil['INT'].get():
 			skillpoints += (self.char.classSkillPoints+int(self.Mabil['INT'].get()))*4
@@ -202,6 +202,7 @@ class Skills(object):
 		self.RemaingingSP.set(self.NumSP.get())
 	
 	def reset(self):
+		self.calcsp()
 		for skill in self.SkillSet:
 			self.CMBranks[skill].set('')
 			self.Ranks[skill].set('')
@@ -214,6 +215,8 @@ class Skills(object):
 		
 	def setbind(self):
 		for skill in self.SkillSet:
+			self.canvas.bind_all("<Enter>", self.calcsp)
+			self.canvas.bind_all("<Leave>", self.calcsp)
 			self.CMBranks[skill].bind("<<ComboboxSelected>>", self.makeLambda(skill))
 			self.EmiscMod[skill].bind("<FocusOut>", self.makeLambda(skill)) 
 			self.EmiscMod[skill].bind("<KeyRelease>", self.makeLambda(skill)) 

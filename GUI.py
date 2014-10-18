@@ -529,8 +529,8 @@ class CharacterCreator(object):
 	
 	def skillsPage(self):
 		if not self.skillsP:
-			self.skillsP = Toplevel(self.root)
-			Skills(self.skillsP, self.Mabil, self.char)
+			skPage = Toplevel(self.root)
+			self.skillsP = Skills(skPage, self.Mabil, self.char)
 		else:
 			self.skillsP.deiconify()		
 			
@@ -555,16 +555,15 @@ class CharacterCreator(object):
 		self.onRoll()
 		
 	def onRoll(self):
-		if self.cClass.get() and self.Race.get():
-			self.rollList.append('')
-			self.rollList.sort()
-			self.backupRollList = list(self.rollList)
-			self.rollval.set(str(self.rollList).lstrip('[').rstrip(',\']').replace(',', ' '))
-			self.resetAbil()
-			for key in self.CMBabil.keys():
-				self.CMBabil[key]['values'] = self.rollList
-		else:
-			PopUp().warn("Abilities", "Please select class and race before altering abilities")
+		self.rollList.append('')
+		self.rollList.sort()
+		self.backupRollList = list(self.rollList)
+		self.rollval.set(str(self.rollList).lstrip('[').rstrip(',\']').replace(',', ' '))
+		self.resetAbil()
+		for key in self.CMBabil.keys():
+			self.CMBabil[key]['values'] = self.rollList
+		#else:
+		#	PopUp().warn("Abilities", "Please select class and race before altering abilities")
 			
 	def resetAbil(self):
 		if self.cClass != '' and self.Race != '':
@@ -622,9 +621,7 @@ class CharacterCreator(object):
 			else: # if no racial bonus
 				self.Mabil[key].set((int(self.abil[key].get()) - 10) /2)
 			self.popAbilList(key, val)
-			if self.skillsP:
-				self.skillsP.destroy()
-				self.skillsP = None
+
 		else:
 			self.pushAbilList(key)
 		
@@ -642,6 +639,8 @@ class CharacterCreator(object):
 		if key == "INT":
 			self.LbonusLNum['text'] = "Bonus Lang: " + self.Mabil[key].get()
 			self.resetLanguages()
+		if self.skillsP:
+			self.skillsP.calcsp()
 		
 	def popAbilList(self, key, val):
 		self.unrollDict[key] = self.rollList.pop(self.rollList.index(int(val)))
@@ -783,6 +782,7 @@ class CharacterCreator(object):
 		self.updateline3
 		self.updateGrapple()
 		self.resetLanguages()
+		self.resetSkillsPage
 		self.update()
 		
 	def classSelect(self, *args):
@@ -807,15 +807,16 @@ class CharacterCreator(object):
 		self.updateline2()
 		self.updateGrapple()
 		self.resetAbil()
-		
-		
-		if self.skillsP:
-				self.skillsP.destroy()
-				self.skillsP = None
-				
+		self.resetSkillsPage()
+			
 	def remakeClass(self):
 		del self.char
 		self.char = Character(self.Race.get(), self.cClass.get())	
+		
+	def resetSkillsPage(self):
+		if self.skillsP:
+				self.skillsP.destroy()
+				self.skillsP = None
 		
 	def clickd(self, *args):
 		if self.char.size:
