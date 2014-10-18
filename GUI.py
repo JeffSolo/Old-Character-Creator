@@ -495,7 +495,7 @@ class CharacterCreator(object):
 		self.LgSize.grid( row=22, column=5, sticky=W)
 		self.LgMisc.grid( row=22, column=6, sticky=W)
 		
-	def drawSkillsSpellsFeats(self)
+	def drawSkillsSpellsFeats(self):
 		self.Bfeats = Button(self.root, text="Select Feats", state=DISABLED, command=self.featsPage)
 		self.Bfeats.grid(row=9, column=10, columnspan=2)
 		self.Bskills = Button(self.root, text="Select Skills", state=DISABLED, command=self.skillsPage)
