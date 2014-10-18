@@ -95,6 +95,8 @@ class Skills(object):
 		self.CMBranks = {}
 		self.LPlusTwo = {}
 		self.EmiscMod = {}
+		self.NumSP = IntVar()
+		self.RemaingingSP = IntVar()
 		
 		for key in self.SkillList.keys():
 			self.TotalMod[key]	 = StringVar()
@@ -108,6 +110,7 @@ class Skills(object):
 		self.drawEverythingElse()
 		self.drawEmptyCol()
 		self.drawButtons()
+		self.drawSkillPointinfo()
 		self.update()
 		
 	def update(self):
@@ -161,15 +164,27 @@ class Skills(object):
 			#print self.CMBranks[item]
 
 	def drawEmptyCol(self):
-		self.EmptyCol = Label(self.frame, width=15)
+		self.EmptyCol = Label(self.frame, width=5)
 		self.EmptyCol.grid(row=0, column=10)
 		
 	def drawButtons(self):
 		self.Bclose = Button(self.frame, text="Save Close", command=self.saveClose)
-		self.Bclose.grid(row=0, column=11)
 		self.Breset = Button(self.frame, text="Reset", command=self.reset)
-		self.Breset.grid(row=1, column=11)
-	
+		
+		self.Bclose.grid(row=1, column=12)
+		self.Breset.grid(row=2, column=12)
+		
+	def drawSkillPointinfo(self):
+		self.Btotalsp = Button(self.frame, relief=GROOVE, text="Skill Points")
+		self.Ltotalsp = Label(self.frame, width=6, textvariable=self.NumSP)
+		self.BspRemaining = Button(self.frame, text="Skill Points Remaining")
+		self.Lremainingsp = Label(self.frame, width=6, textvariable=self.RemaingingSP)
+		
+		self.Btotalsp.grid(row = 5, column=11)
+		self.Ltotalsp.grid(row = 6, column=11)
+		self.BspRemaining.grid(row = 7, column=11)
+		self.Lremainingsp.grid(row = 8, column=11)
+		
 	def reset(self):
 		for skill in self.SkillSet:
 			self.CMBranks[skill].set('')
