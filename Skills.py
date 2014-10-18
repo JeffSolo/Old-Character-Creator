@@ -8,12 +8,12 @@ class Skills(object):
 		self.root = root
 		self.canvas = tk.Canvas(root)
 		self.frame = tk.Frame(self.canvas)
+		self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
 		self.vsb = tk.Scrollbar(root, orient='vertical', command=self.canvas.yview)
 		self.canvas.configure(yscrollcommand=self.vsb.set)
 		self.vsb.pack(side='right', fill='y')
 		self.canvas.pack(side="left", fill="both", expand=True)
-		self.canvas.create_window((4,4), window=self.frame, anchor="nw", 
-                                  tags="self.frame")
+		self.canvas.create_window((4,4), window=self.frame, anchor="nw", tags="self.frame")
 		self.frame.bind("<Configure>", self.OnFrameConfigure)
 								  
 		self.root.protocol("WM_DELETE_WINDOW", self.saveClose)
@@ -24,6 +24,9 @@ class Skills(object):
 		self.createVars()		
 		self.initsp()
 		self.draw()
+		
+	def _on_mousewheel(self, event):
+		self.canvas.yview_scroll(-1*(event.delta/120), "units")
 		
 	def OnFrameConfigure(self, event):
         #'''Reset the scroll region to encompass the inner frame'''

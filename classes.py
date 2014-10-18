@@ -22,7 +22,7 @@ class Classes(object):
 		self.classSkills= None
 		self.spellCaster = False
 		self.spellsKnown = {}	
-		#self.skillPoints=None
+		self.classSkillPoints=None
 		#self.skillPointsOnLevel = None
 	
 	def Barbarian(self): 
@@ -37,7 +37,7 @@ class Classes(object):
 		self.special= ["Rage 1/day", "Fast Movement"]
 		self.hitDie = 12
 		self.classSkills= ["Climb","Craft","Handle Animal","Intimidate","Intuit Direction","Jump","Listen","Ride","Swim","Wilderness Lore"]
-		#self.skillpoints=(4+int)*4 
+		self.classSkillPoints = 4
 		
 	def Bard(self): 
 		self.cClass = "Bard"
@@ -54,7 +54,7 @@ class Classes(object):
 							"Disguise","Escape Artist","Gather Information","Hide","Intuit Direction","Jump","Knowledge","Listen",
 							"Move Silently","Perform","Pick Pocket","Profession","Scry","Sense Motive","Speak Language","Spellcraft",
 							"Swim","Tumble","Use Magic Device"]
-		#self.skillpoints=(4+int)*4 
+		self.classSkillPoints = 4
 		self.spellCaster = True
 		self.spellsKnown={"0":4}
 		
@@ -70,7 +70,7 @@ class Classes(object):
 		self.hitDie = 8
 		self.classSkills = ["Concentration", "Craft", "Diplomacy", "Heal", "Knowledge (arcana)","Knowledge (religion)", "Profession", 
 							"Scry", "Spellcraft"]
-		#self.skillpoints=(2+int)*4
+		self.classSkillPoints = 2
 		self.spellCaster = True
 		self.spellsKnown={"0":3, "1":1+1} 
 		
@@ -85,7 +85,7 @@ class Classes(object):
 		self.hitDie = 8
 		self.classSkills = ["Animal Empathy","Concentration", "Craft", "Diplomacy", "Handle Animal", "Heal", "Intuit Direction", 
 							"Knowledge (nature)", "Profession", "Scry", "Spellcraft", "Swim", "Wilderness Lore"]
-		#self.skillpoints = (4+int)*4
+		self.classSkillPoints = 4
 		self.spellCaster = True
 		self.spellsKnown = {"0":3, "1":1}
 	
@@ -99,7 +99,7 @@ class Classes(object):
 		self.special=["Bonus Feat"]
 		self.hitDie = 10
 		self.classSkills=["Climb", "Craft", "Handle Animal", "Jump", "Ride", "Swim"]
-		self.classSkillPoints=2#(2+int)*4 # just use 2? 
+		self.classSkillPoints = 2#(2+int)*4 # just use 2? 
 		#self.skillPointsOnLevel = 2+int
 	
 	def anyAlign(self):

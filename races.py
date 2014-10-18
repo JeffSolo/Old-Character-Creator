@@ -21,7 +21,8 @@ class Races(object):
 		self.ACsize = 0
 		self.AttackBonus = None
 		self.bonusFeat = None
-		self.extraSkillPoints = None
+		self.baseRaceSkillPoints = None
+		self.levelRaceSkillPoints = None
 		#self.levelAdjust= None
 		self.ReflexSave = None
 		self.FortSave = None
