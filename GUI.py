@@ -558,13 +558,14 @@ class CharacterCreator(object):
 		if self.cClass.get() and self.Race.get():
 			self.rollList.append('')
 			self.rollList.sort()
-			self.backupRollList = self.rollList
+			self.backupRollList = list(self.rollList)
 			self.rollval.set(str(self.rollList).lstrip('[').rstrip(',\']').replace(',', ' '))
 			self.resetAbil()
 			for key in self.CMBabil.keys():
 				self.CMBabil[key]['values'] = self.rollList
 		else:
 			PopUp().warn("Abilities", "Please select class and race before altering abilities")
+			
 	def resetAbil(self):
 		if self.cClass != '' and self.Race != '':
 			# empties abilities
@@ -573,14 +574,12 @@ class CharacterCreator(object):
 			for key in self.Mabil.keys():
 				self.Mabil[key].set('')
 			# resets combobox lists - unnecessarry?
-			#for key in self.unrollDict:
-				#self.rollList.append(self.unrollDict[key])  #put it back in selection list
-				#self.rollList.sort()
 			self.unrollDict.clear()
 			self.unrollDict = {}
 			#remake combobox values
+			self.rollList = list(self.backupRollList)
 			for keyval in self.CMBabil.keys():
-				self.CMBabil[keyval]['values'] = self.backupRollList
+				self.CMBabil[keyval]['values'] = self.rollList
 
 	def update(self):
 		self.root.focus_set()
@@ -665,21 +664,8 @@ class CharacterCreator(object):
 		self.CMBlang.bind("<<ComboboxSelected>>", self.updateLanguages)
 		self.acBind()
 		self.abilBind()
-		#self.root.bind("<Button-1>", self.clickd)
 		
 	def abilBind(self):
-		#self.CMBabil['STR'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'STR'))
-		##self.CMBabil['STR'].bind("<Leave>", lambda event: self.updateAbilities(event, 'STR'))
-		#self.CMBabil['DEX'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'DEX'))
-		##self.CMBabil['DEX'].bind("<Leave>", lambda event: self.updateAbilities(event, 'DEX'))
-		#self.CMBabil['CON'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'CON'))
-		##self.CMBabil['CON'].bind("<Leave>", lambda event: self.updateAbilities(event, 'CON'))
-		#self.CMBabil['INT'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'INT'))
-		##self.CMBabil['INT'].bind("<Leave>", lambda event: self.updateAbilities(event, 'INT'))
-		#self.CMBabil['WIS'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'WIS'))
-		##self.CMBabil['WIS'].bind("<Leave>", lambda event: self.updateAbilities(event, 'WIS'))
-		#self.CMBabil['CHA'].bind("<<ComboboxSelected>>", lambda event: self.updateAbilities(event, 'CHA'))
-		##self.CMBabil['CHA'].bind("<Leave>", lambda event: self.updateAbilities(event, 'CHA'))
 		for abil in self.CMBabil.keys():
 			self.CMBabil[abil].bind("<<ComboboxSelected>>", self.makeLambda(abil))
 		
@@ -821,6 +807,7 @@ class CharacterCreator(object):
 		self.updateline2()
 		self.updateGrapple()
 		self.resetAbil()
+		
 		
 		if self.skillsP:
 				self.skillsP.destroy()
