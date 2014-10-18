@@ -528,6 +528,7 @@ class CharacterCreator(object):
 		self.BresetLang.grid(row=29, column=7, columnspan=2)
 	
 	def skillsPage(self):
+		PopUp().warn("Skills", "Changing Class or Race will cause you to lose all Skill information.")
 		if not self.skillsP:
 			skPage = Toplevel(self.root)
 			self.skillsP = Skills(skPage, self.Mabil, self.char)
@@ -639,8 +640,6 @@ class CharacterCreator(object):
 		if key == "INT":
 			self.LbonusLNum['text'] = "Bonus Lang: " + self.Mabil[key].get()
 			self.resetLanguages()
-		if self.skillsP:
-			self.skillsP.calcsp()
 		
 	def popAbilList(self, key, val):
 		self.unrollDict[key] = self.rollList.pop(self.rollList.index(int(val)))
@@ -782,7 +781,7 @@ class CharacterCreator(object):
 		self.updateline3
 		self.updateGrapple()
 		self.resetLanguages()
-		self.resetSkillsPage
+		self.resetSkillsPage()
 		self.update()
 		
 	def classSelect(self, *args):
