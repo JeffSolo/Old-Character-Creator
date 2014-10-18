@@ -189,12 +189,12 @@ class Skills(object):
 		
 	def initsp(self):
 		skillpoints = 0
-		if self.char.classSkillPoints:
-			skillpoints += self.char.classSkillPoints
-		if self.char.baseRaceSkillPoints:
-			skillpoints += self.char.baseRaceSkillPoints
+		if self.char.classSkillPoints and self.Mabil['INT'].get():
+			skillpoints += (self.char.classSkillPoints+int(self.Mabil['INT'].get()))*4
 		if skillpoints < 4:
 			skillpoints = 4		
+		if self.char.baseRaceSkillPoints:
+			skillpoints += self.char.baseRaceSkillPoints
 		self.NumSP.set(str(skillpoints))
 		self.RemaingingSP.set(self.NumSP.get())
 	
