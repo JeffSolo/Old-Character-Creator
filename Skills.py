@@ -23,6 +23,7 @@ class Skills(object):
 		self.char = character
 		self.createVars()		
 		self.calcsp()
+		self.RemaingingSP.set(self.NumSP.get())
 		self.draw()
 		
 	def _on_mousewheel(self, event):
@@ -165,7 +166,6 @@ class Skills(object):
 			self.CMBranks[item].grid(	row = i+1, column=7, sticky=E+W)
 			self.LPlusTwo[item].grid(	row = i+1, column=8, sticky=E+W)
 			self.EmiscMod[item].grid(	row = i+1, column=9, sticky=E+W)
-			#print self.CMBranks[item]
 
 	def drawEmptyCol(self):
 		self.EmptyCol = Label(self.frame, width=5)
@@ -179,16 +179,16 @@ class Skills(object):
 		self.Breset.grid(row=2, column=12)
 		
 	def drawSkillPointinfo(self):
-		self.Btotalsp = Button(self.frame, relief=GROOVE, text="Skill Points")
+		self.Btotalsp = Button(self.frame, relief=GROOVE, text="Total Skill Points")
 		self.BspRemaining = Button(self.frame,relief=GROOVE, text="Skill Points Remaining")
 		
 		self.Ltotalsp = Label(self.frame, width=6, textvariable=self.NumSP)
 		self.Lremainingsp = Label(self.frame, width=6, textvariable=self.RemaingingSP)
 		
-		self.Btotalsp.grid(row = 5, column=11)
-		self.Ltotalsp.grid(row = 6, column=11)
-		self.BspRemaining.grid(row = 7, column=11)
-		self.Lremainingsp.grid(row = 8, column=11)
+		self.Btotalsp.grid(row = 15, column=11)
+		self.Ltotalsp.grid(row = 16, column=11)
+		self.BspRemaining.grid(row = 17, column=11)
+		self.Lremainingsp.grid(row = 18, column=11)
 		
 	def calcsp(self, *arg):
 		skillpoints = 0
@@ -199,16 +199,18 @@ class Skills(object):
 		if self.char.baseRaceSkillPoints:
 			skillpoints += self.char.baseRaceSkillPoints
 		self.NumSP.set(str(skillpoints))
-		self.RemaingingSP.set(self.NumSP.get())
 	
 	def reset(self):
 		self.calcsp()
+		self.RemaingingSP.set(self.NumSP.get())
 		for skill in self.SkillSet:
+			self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
 			self.CMBranks[skill].set('')
 			self.Ranks[skill].set('')
 			self.MiscMod[skill].set('')
-			self.updateSkills('', skill)
-		self.RemaingingSP.set(self.NumSP.get())
+			self.TotalMod[skill].set('')
+			#self.updateSkills('', skill)
+			
 			
 	def saveClose(self):
 		self.root.withdraw()
