@@ -16,37 +16,28 @@ class CharacterCreator(object):
 		
 	def createVars(self):
 		self.char = Character('','')
-		self.cClass =StringVar()
+		self.Class = StringVar()
 		self.Race =  StringVar()
 		self.size =  StringVar()
 		self.align = StringVar()
 		self.hp =    StringVar()
 		self.baseAtk=StringVar()
-		self.spellRes= StringVar()
-		self.Languages = StringVar() 
-		self.speed = IntVar()
+		self.spellRes=StringVar()
+		self.Languages=StringVar() 
+		self.speed =IntVar()
 		
 		self.Abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']
 		self.abil={}
-		
+		AClist = ['total', 'size', 'armor', 'shield', 'nat', 'deflect', 'misc', 'touch', 'flat']
 		self.Mabil={}
 		self.CMBabil = {}
 		self.Labilnote = {}
 		self.AC = {}
 		
 		self.speed.set('')
-		self.AC['total']=   StringVar()
-		self.AC['size'] =   StringVar()
-		self.AC['armor'] =  StringVar()
-		self.AC['shield'] = StringVar()
-		self.AC['nat'] =    StringVar()
-		self.AC['deflect'] =StringVar()
-		self.AC['misc'] =   StringVar()
-		self.AC['touch'] =  StringVar()
-		self.AC['flat'] =   StringVar()
-		for key in self.AC.keys():
-			self.AC[key].set('')
-				
+		for item in AClist:
+			self.AC[item] = StringVar()
+
 		self.init = {}
 		self.init['total'] = StringVar()
 		self.init['misc'] =  StringVar()
@@ -59,25 +50,13 @@ class CharacterCreator(object):
 			self.abil[item] = StringVar()
 			self.Mabil[item] = StringVar()
 			
+		savesList = ['total', 'base', 'magic', 'misc']
 		self.rsave, self.fsave, self.wsave = {}, {} ,{}
-		self.fsave['total'] = StringVar()
-		self.fsave['base'] =  StringVar()
-		self.fsave['magic'] = StringVar()
-		self.fsave['misc'] =  StringVar()
-		self.rsave['total'] = StringVar()
-		self.rsave['base'] =  StringVar()
-		self.rsave['magic'] = StringVar()
-		self.rsave['misc'] =  StringVar()
-		self.wsave['total'] = StringVar()
-		self.wsave['base'] =  StringVar()
-		self.wsave['magic'] = StringVar()
-		self.wsave['misc'] =  StringVar()
-		#for key in self.fsave.keys():
-		#	self.fsave[key].set('')
-		#for key in self.rsave.keys():
-		#	self.rsave[key].set('')
-		#for key in self.wsave.keys():
-		#	self.wsave[key].set('')	
+		for item in savesList:
+			self.fsave[item] = StringVar()
+			self.rsave[item] = StringVar()
+			self.wsave[item] = StringVar()
+		
 		self.skillsP = None
 		self.spellsP = None
 		self.featsP = None
@@ -146,7 +125,7 @@ class CharacterCreator(object):
 		self.Ldeity = Label(self.root, width=6, relief=GROOVE, anchor=E, text="Deity:")
 		self.Llevel = Label(self.root, width=6, relief=GROOVE, anchor=E, text="Level:")
 		self.CMBrace = ttk.Combobox( self.root, width=12, values=self.char.raceList, textvariable=self.Race)
-		self.CMBclass = ttk.Combobox(self.root, width=12, values=self.char.classList, textvariable=self.cClass)
+		self.CMBclass = ttk.Combobox(self.root, width=12, values=self.char.classList, textvariable=self.Class)
 		self.CMBalign = ttk.Combobox(self.root, width=18, values=self.char.align, textvariable=self.align)
 		self.CMBlevel = ttk.Combobox(self.root, width=6,  values=self.levelList)
 		self.Edeity = Entry(self.root, width=12)
@@ -567,7 +546,7 @@ class CharacterCreator(object):
 		#	PopUp().warn("Abilities", "Please select class and race before altering abilities")
 			
 	def resetAbil(self):
-		if self.cClass != '' and self.Race != '':
+		if self.Class != '' and self.Race != '':
 			# empties abilities
 			for key in self.abil.keys():
 				self.abil[key].set('')
@@ -810,7 +789,7 @@ class CharacterCreator(object):
 			
 	def remakeClass(self):
 		del self.char
-		self.char = Character(self.Race.get(), self.cClass.get())	
+		self.char = Character(self.Race.get(), self.Class.get())	
 		
 	def resetSkillsPage(self):
 		if self.skillsP:
