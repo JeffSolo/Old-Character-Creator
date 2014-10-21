@@ -1,4 +1,5 @@
 from Tkinter import *
+from collections import OrderedDict
 import ttk
 import tkMessageBox as msg
 import AbilityRoller as roller
@@ -26,9 +27,22 @@ class CharacterCreator(object):
 		self.Languages=StringVar() 
 		self.speed =IntVar()
 		
-		self.Abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']
-		self.abil={}
+		self.charInfo = None
+		self.charInfo = OrderedDict([
+				('size',	StringVar()),
+				('age',		StringVar()),
+				('gender',	StringVar()),
+		        ('height',	StringVar()),
+		        ('weight',	StringVar()),
+		        ('eyes', 	StringVar()),
+		        ('hair',  	StringVar()),
+		        ('skin',	StringVar())
+		])
+		
+		abilityList = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']
 		AClist = ['total', 'size', 'armor', 'shield', 'nat', 'deflect', 'misc', 'touch', 'flat']
+		
+		self.abil={}
 		self.Mabil={}
 		self.CMBabil = {}
 		self.Labilnote = {}
@@ -45,7 +59,7 @@ class CharacterCreator(object):
 			self.init[key].set('')
 		
 		self.traits = {}
-		for item in self.Abilities:
+		for item in abilityList:
 			self.traits[item] = StringVar()
 			self.abil[item] = StringVar()
 			self.Mabil[item] = StringVar()
@@ -61,34 +75,30 @@ class CharacterCreator(object):
 		self.spellsP = None
 		self.featsP = None
 		
-		self.rollList = []
-		self.languagelist = []
 		self.unrollDict = {}
+		self.rollList = []
 		self.backupRollList = []
-		
-		self.langcount = 0
-		#for key in self.abil.keys():
-		#	self.abil[key].set('')
-		#for key in self.Mabil.keys():
-		#	self.Mabil[key].set('')
 		self.rollval = StringVar()
+		
+		self.languagelist = []
+		self.langcount = 0
 		
 		self.grapple = {}
 		self.grapple['total'] = StringVar()
 		self.grapple['misc'] = StringVar()
 		self.grapple['size'] = StringVar()
 		
+		self.levelList = range(1,21)
+		
 	def draw(self):
 		self.root.title("Character Creator")
 		self.root.geometry("850x650")
-
-		# Selection Lists
-		self.levelList = range(1,21)
+		
 		self.drawline1()
 		self.drawline2()
 		self.drawline3()
 		self.separator1()
-		self.drawAbilities()
+		self.drawAbilities(['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'])
 		self.drawRoll()
 		self.drawHP()
 		self.drawAC()
@@ -144,82 +154,86 @@ class CharacterCreator(object):
 		
 	def updateline2(self):
 		self.CMBalign['values'] = self.char.align
-		
+			
 	def drawline3(self):
 		#Create Third Line Objects
-		self.Lsize   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Size:")
-		self.Lage    = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Age:")
-		self.Lgender = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Gender:")
-		self.Lheight = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Height:")
-		self.Lweight = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Weight:")
-		self.Leyes   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Eyes:")
-		self.Lhair   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Hair:")
-		self.Lskin   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Skin:")
-		self.Esize   = Entry(self.root, width=6, state=DISABLED, textvariable=self.size)
-		self.Eage    = Entry(self.root, width=6)
-		self.Egender = Entry(self.root, width=6)
-		self.Eheight = Entry(self.root, width=6)
-		self.Eweight = Entry(self.root, width=6)
-		self.Eeyes   = Entry(self.root, width=6)
-		self.Ehair   = Entry(self.root, width=6)
-		self.Eskin   = Entry(self.root, width=6)
-
-		# Place Line 3 on Grid
-		self.Lsize.grid(  row=2, column=0,  sticky=EW)
-		self.Esize.grid(  row=2, column=1,  sticky=EW)
-		self.Lage.grid(   row=2, column=2,  sticky=EW)
-		self.Eage.grid(   row=2, column=3,  sticky=EW)
-		self.Lgender.grid(row=2, column=4,  sticky=EW)
-		self.Egender.grid(row=2, column=5,  sticky=EW)
-		self.Lheight.grid(row=2, column=6,  sticky=EW)
-		self.Eheight.grid(row=2, column=7,  sticky=EW)
-		self.Lweight.grid(row=2, column=8,  sticky=EW)
-		self.Eweight.grid(row=2, column=9,  sticky=EW)
-		self.Leyes.grid(  row=2, column=10, sticky=EW)
-		self.Eeyes.grid(  row=2, column=11, sticky=EW)
-		self.Lhair.grid(  row=2, column=12, sticky=EW)
-		self.Ehair.grid(  row=2, column=13, sticky=EW)
-		self.Lskin.grid(  row=2, column=14, sticky=EW)
-		self.Eskin.grid(  row=2, column=15, sticky=EW)
+		L={}
+		E={}
+		#labelList["Size", "Age", "Gender", "Height", "Weight", "Hair", "Skin"]
+		for i, label in enumerate(self.charInfo.keys()):
+			L[label] = Label(self.root, relief=GROOVE, anchor='e', width=6, text=label.capitalize()+":")
+			E[label] = Entry(self.root, width=6, textvariable=self.charInfo[label])
+			
+			L[label].grid(row=2, column=i*2, sticky=EW)
+			E[label].grid(row=2, column=i*2+1, sticky=EW)
+			
+		E['size']['state'] = 'disabled'
+		#self.Lsize   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Size:")
+		#self.Lage    = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Age:")
+		#self.Lgender = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Gender:")
+		#self.Lheight = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Height:")
+		#self.Lweight = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Weight:")
+		#self.Leyes   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Eyes:")
+		#self.Lhair   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Hair:")
+		#self.Lskin   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Skin:")
+		#self.Esize   = Entry(self.root, width=6, state=DISABLED, textvariable=self.size)
+		#self.Eage    = Entry(self.root, width=6, )#textvariable=self.age)
+		#self.Egender = Entry(self.root, width=6, )#textvariable=self.gender)
+		#self.Eheight = Entry(self.root, width=6, )#textvariable=self.height)
+		#self.Eweight = Entry(self.root, width=6, )#textvariable=self.weight)
+		#self.Eeyes   = Entry(self.root, width=6, )#textvariable=self.eyes)E
+		#self.Ehair   = Entry(self.root, width=6, )#textvariable=self.hair)
+		#self.Eskin   = Entry(self.root, width=6, )#textvariable=self.skin)
+		#
+		##Place Line 3 on Grid
+		#self.Lsize.grid(  row=2, column=0,  sticky=EW)
+		#self.Esize.grid(  row=2, column=1,  sticky=EW)
+		#self.Lage.grid(   row=2, column=2,  sticky=EW)
+		#self.Eage.grid(   row=2, column=3,  sticky=EW)
+		#self.Lgender.grid(row=2, column=4,  sticky=EW)
+		#self.Egender.grid(row=2, column=5,  sticky=EW)
+		#self.Lheight.grid(row=2, column=6,  sticky=EW)
+		#self.Eheight.grid(row=2, column=7,  sticky=EW)
+		#self.Lweight.grid(row=2, column=8,  sticky=EW)
+		#self.Eweight.grid(row=2, column=9,  sticky=EW)
+		#self.Leyes.grid(  row=2, column=10, sticky=EW)
+		#self.Eeyes.grid(  row=2, column=11, sticky=EW)
+		#self.Lhair.grid(  row=2, column=12, sticky=EW)
+		#self.Ehair.grid(  row=2, column=13, sticky=EW)
+		#self.Lskin.grid(  row=2, column=14, sticky=EW)
+		#self.Eskin.grid(  row=2, column=15, sticky=EW)
 
 	def updateline3(self):
-		self.size = self.char.size
+		self.charInfo['size'] = self.char.size
 		
 	def separator1(self):
 		#Create blank space on grid
 		self.Fempty = Frame(self.root, height=20, width=5)
 		self.Fempty.grid(row=3,column=0,columnspan=16, sticky=NSEW)
 		
-	def drawAbilities(self):
-		self.EabilMod = {}
-		self.Babil = {}
-	
-		# Create Ability Label
-		self.Babil['STR'] = Button(self.root, text="STR", relief=GROOVE, anchor=E, width=4, command=PopUp().Bstr)
-		self.Babil['DEX'] = Button(self.root, text="DEX", relief=GROOVE, anchor=E, width=4, command=PopUp().Bdex)
-		self.Babil['CON'] = Button(self.root, text="CON", relief=GROOVE, anchor=E, width=4)
-		self.Babil['INT'] = Button(self.root, text="INT", relief=GROOVE, anchor=E, width=4)
-		self.Babil['WIS'] = Button(self.root, text="WIS", relief=GROOVE, anchor=E, width=4)
-		self.Babil['CHA'] = Button(self.root, text="CHA", relief=GROOVE, anchor=E, width=4)
+	def drawAbilities(self, abilityList):
+		EabilMod = {}
+		Babil = {}
 
-		
-		for i, item in enumerate(self.Abilities):
+		for i, item in enumerate(abilityList):
+			Babil[item] = Button(self.root, text=item, relief=GROOVE, anchor=E, width=4) # command=PopUp().Bstr???
+			
 			self.CMBabil[item] = ttk.Combobox(self.root, width=4, textvariable=self.abil[item])
-			self.EabilMod[item] = Entry(self.root, width=3, state=DISABLED, textvariable=self.Mabil[item])
+			EabilMod[item] = Entry(self.root, width=3, state=DISABLED, textvariable=self.Mabil[item])
 			self.Labilnote[item] = Label(self.root, width=6, textvariable=self.traits[item])
 			
-			self.Babil[item].grid(row=i+4, column=0, sticky=E)
+			Babil[item].grid(row=i+4, column=0, sticky=E)
 			self.CMBabil[item].grid(row=i+4,column=1, sticky=W)
-			self.EabilMod[item].grid(row=i+4,column=2, sticky=W)
+			EabilMod[item].grid(row=i+4,column=2, sticky=W)
 			self.Labilnote[item].grid(row=i+4,column=3, sticky=EW)
 		
-		
+	
 	def drawRoll(self):
 		# Create and Place Roll button
 		self.Broll = Button(self.root, text="Roll Abilities", command=self.customRoll)
 		self.Broll.grid(row=10, column=0, columnspan=2)		
-		self.Broll = Button(self.root, text="Default", width=6, command=self.defaultRoll)
-		self.Broll.grid(row=10, column=2)
+		self.BrollDefault = Button(self.root, text="Default", width=6, command=self.defaultRoll)
+		self.BrollDefault.grid(row=10, column=2)
 		self.roll = Label(self.root, width=18, state=DISABLED, textvariable=self.rollval)
 		self.roll.grid(row=11, column=0, columnspan=3)
 	
@@ -230,19 +244,19 @@ class CharacterCreator(object):
 		self.Ehp.grid(row=4, column=5, sticky=W+N+S)
 	
 	def drawAC(self):
-		self.Bac = Button(self.root, relief=GROOVE, anchor=E, text="AC")
+		Lacplus = {}
+		Lac = {}
+		Bac = Button(self.root, relief=GROOVE, anchor=E, text="AC")
 		self.Eac = Entry(self.root, state=DISABLED, width=4, justify=CENTER, textvariable=self.AC['total'])
-		self.Lac1 = Label(self.root, text="=")
-		self.Lacten = Label(self.root, text="  10 ")
-		self.Lacplus1 = Label(self.root, text=" +   ")
-		self.Lacplus2 = Label(self.root, text="+")
-		self.Lacplus3 = Label(self.root, text="+")
-		self.Lacplus4 = Label(self.root, text="+")
-		self.Lacplus5 = Label(self.root, text="+")
-		self.Lacplus6 = Label(self.root, text="+")
-		self.Lacplus7 = Label(self.root, text="+")
-		self.Lacplus8 = Label(self.root, text="+")
-		self.Lacplus9 = Label(self.root, text="+")
+		Lac1 = Label(self.root, text="=")
+		Lacten = Label(self.root, text="  10 ")
+		Lacplus1 = Label(self.root, text=" +   ")
+		
+		#put this in a loop!!!
+		for i in range(2,8):
+			Lacplus[i] = Label(self.root, text="+")
+			Lacplus[i].grid(row=5, column=i+5, sticky=E)
+	
 		self.Eac2 = Entry(self.root, justify=CENTER, width=4,  textvariable=self.AC['armor'])
 		self.Eac3 = Entry(self.root, justify=CENTER, width=4,  textvariable=self.AC['shield'])
 		self.Eac4 = Entry(self.root, justify=CENTER, width=4, state=DISABLED, textvariable=self.Mabil['DEX'])
@@ -250,40 +264,31 @@ class CharacterCreator(object):
 		self.Eac6 = Entry(self.root, justify=CENTER, width=4,  textvariable=self.AC['nat'])
 		self.Eac7 = Entry(self.root, justify=CENTER, width=4,  textvariable=self.AC['deflect'])
 		self.Eac8 = Entry(self.root, justify=CENTER, width=4,  textvariable=self.AC['misc'])
-				
-		self.Bac.grid( row=5, column=4, sticky=E)
+
+		Bac.grid( row=5, column=4, sticky=E)
 		self.Eac.grid( row=5, column=5, sticky=W+N+S)
-		self.Lac1.grid(row=5, column=5, sticky=E)
-		self.Lacten.grid(row=5, column=6, sticky=W)
-		self.Lacplus1.grid(row=5, column=6, sticky=E)
+		Lac1.grid(row=5, column=5, sticky=E)
+		Lacten.grid(row=5, column=6, sticky=W)
+		Lacplus1.grid(row=5, column=6, sticky=E)
 		self.Eac2.grid(row=5, column=7, sticky=W)
-		self.Lacplus2.grid(row=5, column=7, sticky=E)
+		#Lacplus2.grid(row=5, column=7, sticky=E)
 		self.Eac3.grid(row=5, column=8, sticky=W)
-		self.Lacplus3.grid(row=5,column=8, sticky=E)
+		#Lacplus3.grid(row=5,column=8, sticky=E)
 		self.Eac4.grid(row=5, column=9, sticky=W)
-		self.Lacplus4.grid(row=5,column=9, sticky=E)
+		#Lacplus4.grid(row=5,column=9, sticky=E)
 		self.Eac5.grid(row=5, column=10, sticky=W)
-		self.Lacplus5.grid(row=5,column=10, sticky=E)
+		#Lacplus5.grid(row=5,column=10, sticky=E)
 		self.Eac6.grid(row=5, column=11, sticky=W)
-		self.Lacplus6.grid(row=5,column=11, sticky=E)
+		#Lacplus6.grid(row=5,column=11, sticky=E)
 		self.Eac7.grid(row=5, column=12, sticky=W)
-		self.Lacplus7.grid(row=5,column=12, sticky=E)
+		#Lacplus7.grid(row=5,column=12, sticky=E)
 		self.Eac8.grid(row=5, column=13, sticky=W)
 		
-		self.Lac2 = Label(self.root, font=('TkDefaultFont', 6), text="Armor\nBonus")
-		self.Lac3 = Label(self.root, font=('TkDefaultFont', 6), text="Shield\nBonus")
-		self.Lac4 = Label(self.root, font=('TkDefaultFont', 6), text="Dex\nModifier")
-		self.Lac5 = Label(self.root, font=('TkDefaultFont', 6), text="Size\nModifier")
-		self.Lac6 = Label(self.root, font=('TkDefaultFont', 6), text="Natural\nArmor")
-		self.Lac7 = Label(self.root, font=('TkDefaultFont', 6), text="Deflection\nModifier")
-		self.Lac8 = Label(self.root, font=('TkDefaultFont', 6), text="Misc\nModifier")
-		self.Lac2.grid(row=6, column=7 , sticky=W)
-		self.Lac3.grid(row=6, column=8 , sticky=W)
-		self.Lac4.grid(row=6, column=9 , sticky=W)
-		self.Lac5.grid(row=6, column=10, sticky=W)
-		self.Lac6.grid(row=6, column=11, sticky=W)
-		self.Lac7.grid(row=6, column=12, sticky=W)
-		self.Lac8.grid(row=6, column=13, sticky=W)
+		textList = ["Armor\nBonus", "Shield\nBonus", "Dex\nModifier", "Size\nModifier", "Natural\nArmor", "Deflection\nModifier","Misc\nModifier"]
+		for i in range(2,9):
+			Lac[i] = Label(self.root, font=('TkDefaultFont', 6), text=textList[i-2])
+			Lac[i].grid(row=6, column=i+5, sticky=W)
+
 		
 		self.BtouchAC = Button(self.root, relief=GROOVE, anchor=E, text="Touch AC")
 		self.EtouchAC = Entry( self.root, width=6, state=DISABLED, textvariable=self.AC['touch'])
@@ -736,9 +741,9 @@ class CharacterCreator(object):
 		self.remakeClass()
 		# set size if it iexists
 		if self.char.size:
-			self.size.set(self.char.size)
+			self.charInfo['size'].set(self.char.size)
 		else:
-			self.size.set('')
+			self.charInfo['size'].set('')
 		
 		if self.char.speed:
 			self.speed.set(self.char.speed)
@@ -800,7 +805,7 @@ class CharacterCreator(object):
 		
 	def clickd(self, *args):
 		if self.char.size:
-			self.size.set(self.char.size)
+			self.charInfo['size'].set(self.char.size)
 		#self.draw
 
 x = CharacterCreator()
