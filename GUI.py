@@ -1,5 +1,7 @@
 from Tkinter import *
+import tkFileDialog as tkf
 from collections import OrderedDict
+import json
 import ttk
 import tkMessageBox as msg
 import AbilityRoller as roller
@@ -27,6 +29,11 @@ class CharacterCreator(object):
 		self.Languages=StringVar() 
 		self.speed =IntVar()
 		
+		self.Names = OrderedDict([
+			("Character Name",StringVar()),
+			("PlayerName",StringVar())
+		])
+		
 		self.charInfo = None
 		self.charInfo = OrderedDict([
 				('size',	StringVar()),
@@ -52,6 +59,7 @@ class CharacterCreator(object):
 		for item in AClist:
 			self.AC[item] = StringVar()
 
+			
 		self.init = {}
 		self.init['total'] = StringVar()
 		self.init['misc'] =  StringVar()
@@ -111,6 +119,7 @@ class CharacterCreator(object):
 		self.drawSkillsSpellsFeats()
 		self.drawSpecialFeats()
 		self.drawLanguages()
+		self.drawSaveLoadCharacter()
 		
 		self.update()
 		
@@ -157,9 +166,7 @@ class CharacterCreator(object):
 			
 	def drawline3(self):
 		#Create Third Line Objects
-		L={}
-		E={}
-		#labelList["Size", "Age", "Gender", "Height", "Weight", "Hair", "Skin"]
+		L, E = {}, {}
 		for i, label in enumerate(self.charInfo.keys()):
 			L[label] = Label(self.root, relief=GROOVE, anchor='e', width=6, text=label.capitalize()+":")
 			E[label] = Entry(self.root, width=6, textvariable=self.charInfo[label])
@@ -168,40 +175,6 @@ class CharacterCreator(object):
 			E[label].grid(row=2, column=i*2+1, sticky=EW)
 			
 		E['size']['state'] = 'disabled'
-		#self.Lsize   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Size:")
-		#self.Lage    = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Age:")
-		#self.Lgender = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Gender:")
-		#self.Lheight = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Height:")
-		#self.Lweight = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Weight:")
-		#self.Leyes   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Eyes:")
-		#self.Lhair   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Hair:")
-		#self.Lskin   = Label(self.root, relief=GROOVE, anchor=E, width=6, text="Skin:")
-		#self.Esize   = Entry(self.root, width=6, state=DISABLED, textvariable=self.size)
-		#self.Eage    = Entry(self.root, width=6, )#textvariable=self.age)
-		#self.Egender = Entry(self.root, width=6, )#textvariable=self.gender)
-		#self.Eheight = Entry(self.root, width=6, )#textvariable=self.height)
-		#self.Eweight = Entry(self.root, width=6, )#textvariable=self.weight)
-		#self.Eeyes   = Entry(self.root, width=6, )#textvariable=self.eyes)E
-		#self.Ehair   = Entry(self.root, width=6, )#textvariable=self.hair)
-		#self.Eskin   = Entry(self.root, width=6, )#textvariable=self.skin)
-		#
-		##Place Line 3 on Grid
-		#self.Lsize.grid(  row=2, column=0,  sticky=EW)
-		#self.Esize.grid(  row=2, column=1,  sticky=EW)
-		#self.Lage.grid(   row=2, column=2,  sticky=EW)
-		#self.Eage.grid(   row=2, column=3,  sticky=EW)
-		#self.Lgender.grid(row=2, column=4,  sticky=EW)
-		#self.Egender.grid(row=2, column=5,  sticky=EW)
-		#self.Lheight.grid(row=2, column=6,  sticky=EW)
-		#self.Eheight.grid(row=2, column=7,  sticky=EW)
-		#self.Lweight.grid(row=2, column=8,  sticky=EW)
-		#self.Eweight.grid(row=2, column=9,  sticky=EW)
-		#self.Leyes.grid(  row=2, column=10, sticky=EW)
-		#self.Eeyes.grid(  row=2, column=11, sticky=EW)
-		#self.Lhair.grid(  row=2, column=12, sticky=EW)
-		#self.Ehair.grid(  row=2, column=13, sticky=EW)
-		#self.Lskin.grid(  row=2, column=14, sticky=EW)
-		#self.Eskin.grid(  row=2, column=15, sticky=EW)
 
 	def updateline3(self):
 		self.charInfo['size'] = self.char.size
@@ -252,7 +225,6 @@ class CharacterCreator(object):
 		Lacten = Label(self.root, text="  10 ")
 		Lacplus1 = Label(self.root, text=" +   ")
 		
-		#put this in a loop!!!
 		for i in range(2,8):
 			Lacplus[i] = Label(self.root, text="+")
 			Lacplus[i].grid(row=5, column=i+5, sticky=E)
@@ -433,17 +405,6 @@ class CharacterCreator(object):
 		self.Fempty2 = Frame(self.root, height=20)
 		self.Fempty2.grid(row=20,column=0,columnspan=10, sticky = E+W)
 		
-		
-	#self.Bfort.grid(  row=13, column=0, columnspan=3, sticky=E) 
-	#self.Eftotal.grid(row=13, column=3)
-	#self.Lfeq.grid(   row=13, column=3, columnspan=2)   
-	#self.Efbase.grid( row=13, column=4) 
-	#self.Lfplus1.grid(row=13, column=4, sticky=E)
-	#self.Efabilm.grid(row=13, column=5, sticky=W)
-	#self.Lfplus2.grid(row=13, column=5, sticky=E)
-	#self.Efmagic.grid(row=13, column=6, sticky=W)
-	#self.Lfplus3.grid(row=13, column=6, sticky=E)
-	#self.Efmisc.grid( row=13, column=7, sticky=W)
 	def drawGrapple(self):
 		self.Bgrapple = Button(self.root, relief=GROOVE, width=6, text="Grapple")
 		self.EgrapTotal = Entry(self.root, width=4, justify=CENTER, state=DISABLED, textvariable=self.grapple['total'])
@@ -510,6 +471,13 @@ class CharacterCreator(object):
 		self.CMBlang.grid(row=21, column=7, columnspan=2, sticky=E+W)
 		self.Llang.grid(row=22, column=7, columnspan=2, rowspan=7)
 		self.BresetLang.grid(row=29, column=7, columnspan=2)
+	
+	def drawSaveLoadCharacter(self):
+		BsaveCharacter = Button(self.root, text="Save Character", command=self.saveChar)
+		BloadCharacter = Button(self.root, text="Load Character", command=self.loadChar)
+		
+		BsaveCharacter.grid(row=20, column=12, columnspan=2)
+		BloadCharacter.grid(row=22, column=12, columnspan=2)
 	
 	def skillsPage(self):
 		PopUp().warn("Skills", "Changing Class or Race will cause you to lose all Skill information.")
@@ -584,10 +552,6 @@ class CharacterCreator(object):
 			self.Languages.set('')
 			self.CMBlang['values'] = self.languagelist
 			self.langcount += 1
-		
-	#def resetLang(self):
-	#	self.CMBlang['values'] = self.char.bonusLang
-	#	self.Llang['text'] = 
 	
 	def updateAbilities(self, args, key):
 		if key:
@@ -802,6 +766,24 @@ class CharacterCreator(object):
 			self.skillsP.reset()
 				#self.skillsP.destroy()
 				#self.skillsP = None
+	
+	def saveChar(self):
+		file = tkf.asksaveasfilename()
+		data = OrderedDict( [
+			("Class", self.Class.get()), 
+			("Race", self.Race.get()),
+			("CharInfo", OrderedDict(zip([i for i in self.charInfo], [self.charInfo[i].get() for i in self.charInfo.keys()])) )
+		] )
+		with open(file, 'w') as outfile:
+			json.dump(data, outfile, indent=4, separators=(',', ': '))
+	
+	def loadChar(self):
+		file = tkf.askopenfilename()
+		with open(file, 'r') as infile:
+			d = json.load(infile)
+			for item in d.keys():
+				print d[item]
+				print type(d[item])
 		
 	def clickd(self, *args):
 		if self.char.size:
