@@ -1,5 +1,6 @@
 from Tkinter import *
 import tkFileDialog as tkf
+import os
 from collections import OrderedDict
 import json
 import ttk
@@ -14,6 +15,9 @@ from feats import Feats
 class CharacterCreator(object):
 	def __init__(self):
 		self.root = Tk()
+		self.skillpickle = os.path.dirname(os.path.realpath(__file__)) + '\\skills.p'
+		if os.path.isfile(self.skillpickle):
+			os.remove(self.skillpickle)
 		self.createVars()
 		self.draw()
 		
@@ -480,12 +484,12 @@ class CharacterCreator(object):
 		BloadCharacter.grid(row=22, column=12, columnspan=2)
 	
 	def skillsPage(self):
-		PopUp().warn("Skills", "Changing Class or Race will cause you to lose all Skill information.")
+		PopUp().warn("Skills", "Changing Class, Race, or Intelligence will cause you to lose all Skill information.")
 		if not self.skillsP:
-			skPage = Toplevel(self.root)
-			self.skillsP = Skills(skPage, self.Mabil, self.char)
+			self.skPage = Toplevel(self.root)
+			self.skillsP = Skills(self.skPage, self.Mabil, self.char)
 		else:
-			self.skillsP.deiconify()		
+			self.skillsP.deiconify()
 			
 	def spellsPage(self):
 		if not self.spellsP:
@@ -588,6 +592,7 @@ class CharacterCreator(object):
 		if key == "INT":
 			self.LbonusLNum['text'] = "Bonus Lang: " + self.Mabil[key].get()
 			self.resetLanguages()
+			self.resetSkillsPage()
 		
 	def popAbilList(self, key, val):
 		self.unrollDict[key] = self.rollList.pop(self.rollList.index(int(val)))
@@ -761,11 +766,8 @@ class CharacterCreator(object):
 		self.char = Character(self.Race.get(), self.Class.get())	
 		
 	def resetSkillsPage(self):
-		if self.skillsP:
-			print "Y"
-			self.skillsP.reset()
-				#self.skillsP.destroy()
-				#self.skillsP = None
+		if os.path.isfile(self.skillpickle):
+			os.remove(self.skillpickle)
 	
 	def saveChar(self):
 		file = tkf.asksaveasfilename()
