@@ -191,9 +191,11 @@ class Skills(object):
 	def drawButtons(self):
 		self.Bclose = Button(self.frame, text="Save Close", command=self.saveClose)
 		self.Breset = Button(self.frame, text="Reset", command=self.reset)
+		self.Bsave  = Button(self.frame, text="Save", command=self.save)
 		
 		self.Bclose.grid(row=1, column=12)
 		self.Breset.grid(row=2, column=12)
+		self.Bsave.grid( row=4, column=12)
 		
 	def drawSkillPointinfo(self):
 		self.Btotalsp = Button(self.frame, relief=GROOVE, text="Total Skill Points")
