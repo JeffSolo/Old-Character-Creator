@@ -3,29 +3,35 @@ import Tkinter as tk
 import ttk
 import tkMessageBox as msg
 from PopUp import PopUp
+import pickle
+import os
 
 class Skills(object):
-	def __init__(self, root, abilities, character):
-		self.root = root
-		self.canvas = tk.Canvas(root)
+	def __init__(self, topl, abilities, character):
+		self.picklefile = os.path.dirname(os.path.realpath(__file__)) + '\\skills.p'
+		
+		self.topl = topl
+		self.canvas = tk.Canvas(topl)
 		self.frame = tk.Frame(self.canvas)
 		self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-		self.vsb = tk.Scrollbar(root, orient='vertical', command=self.canvas.yview)
+		self.vsb = tk.Scrollbar(topl, orient='vertical', command=self.canvas.yview)
 		self.canvas.configure(yscrollcommand=self.vsb.set)
 		self.vsb.pack(side='right', fill='y')
 		self.canvas.pack(side="left", fill="both", expand=True)
 		self.canvas.create_window((4,4), window=self.frame, anchor="nw", tags="self.frame")
 		self.frame.bind("<Configure>", self.OnFrameConfigure)
 								  
-		self.root.protocol("WM_DELETE_WINDOW", self.saveClose)
-		self.root.title("Skills")
-		self.root.geometry("700x800")
+		self.topl.protocol("WM_DELETE_WINDOW", self.saveClose)
+		self.topl.title("Skills")
+		self.topl.geometry("700x800")
 		self.Mabil = abilities
 		self.char = character
 		self.createVars()		
 		self.calcsp()
 		self.RemaingingSP.set(self.NumSP.get())
+		self.loadSP()
 		self.draw()
+		
 		
 	def _on_mousewheel(self, event):
 		self.canvas.yview_scroll(-1*(event.delta/120), "units")
@@ -109,7 +115,17 @@ class Skills(object):
 			self.Ranks[key] 	 = StringVar()
 			self.MiscMod[key]	 = StringVar()
 			self.classSkill[key] = StringVar()
-		self.flag = False
+		self.flag = False # used to check calcSP()
+		
+	
+	def loadSP(self):
+		# load pickle file 
+		if os.path.isfile(self.picklefile):
+			pdict = pickle.load(open(self.picklefile, 'rb'))
+			for key in pdict.keys():
+				self.Ranks[key].set(pdict[key])
+				self.updateSkills(key, False)
+				
 		
 	def draw(self):
 		self.drawHeader()
@@ -167,7 +183,7 @@ class Skills(object):
 			self.CMBranks[item].grid(	row = i+1, column=7, sticky=E+W)
 			self.LPlusTwo[item].grid(	row = i+1, column=8, sticky=E+W)
 			self.EmiscMod[item].grid(	row = i+1, column=9, sticky=E+W)
-
+	
 	def drawEmptyCol(self):
 		self.EmptyCol = Label(self.frame, width=5)
 		self.EmptyCol.grid(row=0, column=10)
@@ -203,9 +219,10 @@ class Skills(object):
 		self.NumSP.set(str(skillpoints))
 		self.calcRemaingingSP()
 		if self.RemaingingSP.get() < 0 and self.flag == False:
+			#self.close()
 			self.flag = True
-			self.reset()
 			PopUp().error('','Too many skill points assigned, resetting')		
+			self.reset()
 			self.flag = False
 			
 	
@@ -218,10 +235,23 @@ class Skills(object):
 			self.Ranks[skill].set('')
 			self.MiscMod[skill].set('')
 			self.TotalMod[skill].set('')
-			#self.updateSkills('', skill)
+			#self.updateSkills(skill, False)
 			
+	def save(self):
+		pickledict = {}
+		for skill in self.SkillSet:
+			pickledict[skill] = self.Ranks[skill].get()
+			
+		with open(self.picklefile, "wb") as f:
+			pickle.dump(pickledict, f)
+	
+	def close(self):
+		self.topl.destroy()
+	
 	def saveClose(self):
-		self.root.withdraw()
+		self.loadSP()
+		self.save()
+		self.close()
 		
 	def setbind(self):
 		for skill in self.SkillSet:
@@ -232,7 +262,7 @@ class Skills(object):
 			self.EmiscMod[skill].bind("<KeyRelease>", self.makeLambda(skill)) 
 	
 	def makeLambda(self, skill):
-		return lambda event: self.updateSkills(event, skill)
+		return lambda event: self.updateSkills(skill, event)
 		
 	def cbonoff(self, skillname):
 		ret = IntVar()
@@ -243,27 +273,28 @@ class Skills(object):
 			return ret
 	
 	def UpdateRankList(self, skillname):		
-		if skillname in self.char.classSkills:
+		if skillname in self.char.classSkills:	
 			return [i for i in xrange(min(self.char.characterLevel+4, self.RemaingingSP.get()+1))] #+1 since xrange is noninclusive
 		else:
 			return [i for i in xrange(min((self.char.characterLevel+3)/2+1, self.RemaingingSP.get()+1))]  #+1 since xrange is noninclusive
 
 	# Could make different functions for setbind, so we don't have to do multiple checks each time
-	def updateSkills(self, args, key):
+	def updateSkills(self, key, args=None):
 		setval = 0
 		if self.Mabil[self.SkillList[key].strip('*')].get().isdigit():
 			setval += int(self.Mabil[self.SkillList[key].strip('*')].get())
 		if self.Ranks[key].get().isdigit():
 			self.calcRemaingingSP()
-			for skill in self.SkillSet: 
-				self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
+			if args == True: # set in self.loadSP(), skips if we've opened before
+				for skill in self.SkillSet: 
+					self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
 			setval += int(self.Ranks[key].get())
 		if self.MiscMod[key].get().isdigit():
 			setval += int(self.MiscMod[key].get())
 		if setval > 0:
 			self.TotalMod[key].set(setval)
 		else:
-			self.TotalMod[key].set('')
+			self.TotalMod[key].set(0)
 		
 	def calcRemaingingSP(self):
 		rem = 0
