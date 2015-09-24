@@ -121,10 +121,11 @@ class Skills(object):
 	def loadSP(self):
 		# load pickle file 
 		if os.path.isfile(self.picklefile):
-			pdict = pickle.load(open(self.picklefile, 'rb'))
+			with open(self.picklefile, "rb") as f:
+				pdict = pickle.load(f)
 			for key in pdict.keys():
 				self.Ranks[key].set(pdict[key])
-				self.updateSkills(key, False)
+				self.updateSkills(key, None)
 				
 		
 	def draw(self):
@@ -210,7 +211,7 @@ class Skills(object):
 		self.Lremainingsp.grid(row = 18, column=11)
 		
 	
-	def calcsp(self,  *arg):
+	def calcsp(self, *arg):
 		skillpoints = 0
 		if self.char.classSkillPoints and self.Mabil['INT'].get():
 			skillpoints += (self.char.classSkillPoints+int(self.Mabil['INT'].get()))*4
@@ -226,7 +227,6 @@ class Skills(object):
 			PopUp().error('','Too many skill points assigned, resetting')		
 			self.reset()
 			self.flag = False
-			
 	
 	def reset(self):
 		self.calcsp()
@@ -242,7 +242,7 @@ class Skills(object):
 	def save(self):
 		pickledict = {}
 		for skill in self.SkillSet:
-			pickledict[skill] = self.Ranks[skill].get()
+			pickledict[skill] = self.Ranks[skill].get()		
 			
 		with open(self.picklefile, "wb") as f:
 			pickle.dump(pickledict, f)
@@ -251,7 +251,6 @@ class Skills(object):
 		self.topl.destroy()
 	
 	def saveClose(self):
-		self.loadSP()
 		self.save()
 		self.close()
 		
@@ -281,13 +280,13 @@ class Skills(object):
 			return [i for i in xrange(min((self.char.characterLevel+3)/2+1, self.RemaingingSP.get()+1))]  #+1 since xrange is noninclusive
 
 	# Could make different functions for setbind, so we don't have to do multiple checks each time
-	def updateSkills(self, key, args=None):
+	def updateSkills(self, key, args=False):
 		setval = 0
 		if self.Mabil[self.SkillList[key].strip('*')].get().isdigit():
 			setval += int(self.Mabil[self.SkillList[key].strip('*')].get())
 		if self.Ranks[key].get().isdigit():
 			self.calcRemaingingSP()
-			if args == True: # set in self.loadSP(), skips if we've opened before
+			if args != None: # set in self.loadSP(), skips if we've opened before
 				for skill in self.SkillSet: 
 					self.CMBranks[skill]['values'] = self.UpdateRankList(skill)
 			setval += int(self.Ranks[key].get())
