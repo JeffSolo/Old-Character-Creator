@@ -1,4 +1,5 @@
-*.p
+skills.p
 *.pyc
 backupskills.py
 crap*
+tdkexample.py
