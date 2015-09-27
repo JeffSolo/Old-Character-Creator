@@ -1,15 +1,12 @@
 from Tkinter import *
 import Tkinter as tk
-import ttk
+import ttk, os, pickle
 import tkMessageBox as msg
+import filenames as fname
 from PopUp import PopUp
-import pickle
-import os
 
 class Skills(object):
 	def __init__(self, topl, abilities, character):
-		self.picklefile = os.path.dirname(os.path.realpath(__file__)) + '\\skills.p'
-		
 		self.topl = topl
 		self.canvas = tk.Canvas(topl)
 		self.frame = tk.Frame(self.canvas)
@@ -120,8 +117,8 @@ class Skills(object):
 	
 	def loadSP(self):
 		# load pickle file 
-		if os.path.isfile(self.picklefile):
-			with open(self.picklefile, "rb") as f:
+		if os.path.isfile(fname.SKILLPICKLE):
+			with open(fname.SKILLPICKLE, "rb") as f:
 				pdict = pickle.load(f)
 			for key in pdict.keys():
 				self.Ranks[key].set(pdict[key])
@@ -244,7 +241,7 @@ class Skills(object):
 		for skill in self.SkillSet:
 			pickledict[skill] = self.Ranks[skill].get()		
 			
-		with open(self.picklefile, "wb") as f:
+		with open(fname.SKILLPICKLE, "wb+") as f:
 			pickle.dump(pickledict, f)
 	
 	def close(self):

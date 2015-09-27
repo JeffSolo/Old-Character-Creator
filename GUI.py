@@ -1,23 +1,21 @@
 from Tkinter import *
 import tkFileDialog as tkf
-import os
+import os, json, ttk
 from collections import OrderedDict
-import json
-import ttk
 import tkMessageBox as msg
 import AbilityRoller as roller
+import filenames as fname
 from Character import Character
 from PopUp import PopUp
 from Skills import Skills
 from Spells import Spells
 from feats import Feats
 
+
 class CharacterCreator(object):
 	def __init__(self):
 		self.root = Tk()
-		self.skillpickle = os.path.dirname(os.path.realpath(__file__)) + '\\skills.p'
-		if os.path.isfile(self.skillpickle):
-			os.remove(self.skillpickle)
+		self.makeCharacterDirectory = fname.initializeFolders()
 		self.createVars()
 		self.draw()
 		
@@ -33,9 +31,10 @@ class CharacterCreator(object):
 		self.Languages=StringVar() 
 		self.speed =IntVar()
 		
+		self.Names = None
 		self.Names = OrderedDict([
-			("Character Name",StringVar()),
-			("PlayerName",StringVar())
+				("CharName", StringVar()),
+				("PlayerName", StringVar())
 		])
 		
 		self.charInfo = None
@@ -131,8 +130,8 @@ class CharacterCreator(object):
 		# Create First Line Objects
 		self.LcharName = Label(self.root, text="Character Name:", relief=GROOVE, width=13, anchor=E)
 		self.LplayerName = Label(self.root, text="Player Name:",  relief=GROOVE, width=12, anchor=E)
-		self.EcharName = Entry(  self.root, width=36)
-		self.EplayerName = Entry(self.root, width=36)
+		self.EcharName = Entry(  self.root, width=36, textvariable=self.Names['CharName'])
+		self.EplayerName = Entry(self.root, width=36, textvariable=self.Names['PlayerName']) 
 
 		# Place Line 1 on Grid
 		self.LcharName.grid(  row=0, column=0, columnspan=2, sticky=NSEW)
@@ -484,7 +483,7 @@ class CharacterCreator(object):
 		BloadCharacter.grid(row=22, column=12, columnspan=2)
 	
 	def skillsPage(self):
-		PopUp().warn("Skills", "Changing Class, Race, or Intelligence will cause you to lose all Skill information.")
+		PopUp().warn("Skills", "Changing Class, Race, or Intelligence may cause you to lose all Skill information.")
 		if not self.skillsP:
 			self.skPage = Toplevel(self.root)
 			self.skillsP = Skills(self.skPage, self.Mabil, self.char)
@@ -613,6 +612,7 @@ class CharacterCreator(object):
 		self.CMBrace.bind("<<ComboboxSelected>>", self.raceSelect)
 		self.CMBclass.bind("<<ComboboxSelected>>", self.classSelect)
 		self.CMBlang.bind("<<ComboboxSelected>>", self.updateLanguages)
+		self.EcharName.bind("<FocusOut>", self.nameChange)
 		self.acBind()
 		self.abilBind()
 		
@@ -766,18 +766,35 @@ class CharacterCreator(object):
 		self.char = Character(self.Race.get(), self.Class.get())	
 		
 	def resetSkillsPage(self):
-		if os.path.isfile(self.skillpickle):
-			os.remove(self.skillpickle)
+		if os.path.isfile(fname.SKILLPICKLE):
+			os.remove(fname.SKILLPICKLE)
+	
+	def nameChange(self, *args):
+		name = self.Names['CharName'].get()
+
+		# currently these three change regardless of if name already exists
+		fname.onNameChange(name)
+		self.skillpickle = fname.SKILLPICKLE
+		self.featpickle = fname.FEATPICKLE
+		
 	
 	def saveChar(self):
-		file = tkf.asksaveasfilename()
+		opts = {}
+		opts['defaultextension'] ='.dnd'
+		opts['initialdir'] = fname.CPATH
+		opts['initialfile'] = fname.NAME
+		
+		file = tkf.asksaveasfilename(**opts)
 		data = OrderedDict( [
+			("Player Name", self.Names["PlayerName"].get()),
+			("Character Name", self.Names["CharName"].get()),
 			("Class", self.Class.get()), 
 			("Race", self.Race.get()),
-			("CharInfo", OrderedDict(zip([i for i in self.charInfo], [self.charInfo[i].get() for i in self.charInfo.keys()])) )
+			("Character info", OrderedDict(zip([i for i in self.charInfo], [self.charInfo[i].get() for i in self.charInfo.keys()])) )
 		] )
-		with open(file, 'w') as outfile:
+		with open(file, 'w+') as outfile:
 			json.dump(data, outfile, indent=4, separators=(',', ': '))
+	
 	
 	def loadChar(self):
 		file = tkf.askopenfilename()
