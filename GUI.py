@@ -795,7 +795,6 @@ class CharacterCreator(object):
 		with open(file, 'w+') as outfile:
 			json.dump(data, outfile, indent=4, separators=(',', ': '))
 	
-	
 	def loadChar(self):
 		file = tkf.askopenfilename()
 		with open(file, 'r') as infile:
@@ -808,5 +807,3 @@ class CharacterCreator(object):
 		if self.char.size:
 			self.charInfo['size'].set(self.char.size)
 		#self.draw
-
-x = CharacterCreator()
