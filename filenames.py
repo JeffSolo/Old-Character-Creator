@@ -9,8 +9,8 @@ CPATH = os.path.dirname(os.path.realpath(__file__)) + '\\Characters\\' + NAME
 
 def initializeFolders():
 	makeCharacterDirectory()
-	SKILLPICKLE = CPATH + '\\skills.p'
-	FEATPICKLE =  CPATH + '\\feats.p'
+	setSKILLP(CPATH)
+	setFEATP(CPATH)
 
 def makeCharacterDirectory(name=NAME, i=0):
 	if not os.path.exists(BASEPATH):
