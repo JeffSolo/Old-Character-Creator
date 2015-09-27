@@ -2,7 +2,7 @@ from Tkinter import *
 import Tkinter as tk
 import ttk, os, pickle
 import tkMessageBox as msg
-import filenames as fname
+import filestructure as fstruct
 from PopUp import PopUp
 
 class Skills(object):
@@ -117,8 +117,8 @@ class Skills(object):
 	
 	def loadSP(self):
 		# load pickle file 
-		if os.path.isfile(fname.SKILLPICKLE):
-			with open(fname.SKILLPICKLE, "rb") as f:
+		if os.path.isfile(fstruct.SKILLPICKLE):
+			with open(fstruct.SKILLPICKLE, "rb") as f:
 				pdict = pickle.load(f)
 			for key in pdict.keys():
 				self.Ranks[key].set(pdict[key])
@@ -241,7 +241,7 @@ class Skills(object):
 		for skill in self.SkillSet:
 			pickledict[skill] = self.Ranks[skill].get()		
 			
-		with open(fname.SKILLPICKLE, "wb+") as f:
+		with open(fstruct.SKILLPICKLE, "wb+") as f:
 			pickle.dump(pickledict, f)
 	
 	def close(self):

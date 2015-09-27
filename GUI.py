@@ -4,7 +4,7 @@ import os, json, ttk
 from collections import OrderedDict
 import tkMessageBox as msg
 import AbilityRoller as roller
-import filenames as fname
+import filestructure as fstruct
 from Character import Character
 from PopUp import PopUp
 from Skills import Skills
@@ -15,7 +15,7 @@ from feats import Feats
 class CharacterCreator(object):
 	def __init__(self):
 		self.root = Tk()
-		self.makeCharacterDirectory = fname.initializeFolders()
+		self.makeCharacterDirectory = fstruct.initializeFolders()
 		self.createVars()
 		self.draw()
 		
@@ -766,23 +766,23 @@ class CharacterCreator(object):
 		self.char = Character(self.Race.get(), self.Class.get())	
 		
 	def resetSkillsPage(self):
-		if os.path.isfile(fname.SKILLPICKLE):
-			os.remove(fname.SKILLPICKLE)
+		if os.path.isfile(fstruct.SKILLPICKLE):
+			os.remove(fstruct.SKILLPICKLE)
 	
 	def nameChange(self, *args):
 		name = self.Names['CharName'].get()
 
 		# currently these three change regardless of if name already exists
-		fname.onNameChange(name)
-		self.skillpickle = fname.SKILLPICKLE
-		self.featpickle = fname.FEATPICKLE
+		fstruct.onNameChange(name)
+		self.skillpickle = fstruct.SKILLPICKLE
+		self.featpickle = fstruct.FEATPICKLE
 		
 	
 	def saveChar(self):
 		opts = {}
 		opts['defaultextension'] ='.dnd'
-		opts['initialdir'] = fname.CPATH
-		opts['initialfile'] = fname.NAME
+		opts['initialdir'] = fstruct.CPATH
+		opts['initialfile'] = fstruct.NAME
 		
 		file = tkf.asksaveasfilename(**opts)
 		data = OrderedDict( [
