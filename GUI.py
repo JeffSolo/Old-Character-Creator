@@ -6,11 +6,13 @@ import tkMessageBox as msg
 import zipfile as zf
 import AbilityRoller as roller
 import filestructure as fstruct
+import SaveLoad as sl
 from Character import Character
 from PopUp import PopUp
 from Skills import Skills
 from Spells import Spells
 from feats import Feats
+
 
 
 class CharacterCreator(object):
@@ -26,11 +28,18 @@ class CharacterCreator(object):
 		self.Race =  StringVar()
 		self.size =  StringVar()
 		self.align = StringVar()
+		self.deity = StringVar()
 		self.hp =    StringVar()
 		self.baseAtk=StringVar()
 		self.spellRes=StringVar()
 		self.Languages=StringVar() 
-		self.speed =IntVar()
+		self.damagereduction=StringVar()
+		
+		self.speed = IntVar()
+		self.level = IntVar()
+		
+		self.LspecialsL = {}
+		self.LspecialsL['text'] = ''
 		
 		self.Names = None
 		self.Names = OrderedDict([
@@ -59,7 +68,7 @@ class CharacterCreator(object):
 		self.Labilnote = {}
 		self.AC = {}
 		
-		self.speed.set('')
+		#self.speed.set('')
 		for item in AClist:
 			self.AC[item] = StringVar()
 
@@ -102,6 +111,36 @@ class CharacterCreator(object):
 		
 		self.levelList = range(1,21)
 		
+		self.GetCharacterDict()
+		
+	def GetCharacterDict(self):
+		return OrderedDict( [
+			("Player Name", self.Names["PlayerName"].get()),
+			("Character Name", self.Names["CharName"].get()),
+			("Class", self.Class.get()), 
+			("Race", self.Race.get()),
+			("Level", self.level.get()),
+			("Alignment", self.align.get()),
+			("Deity", self.deity.get()),
+			("Character Description", OrderedDict(zip([i for i in self.charInfo], [self.charInfo[i].get() for i in self.charInfo.keys()])) ),
+			("Abilities", OrderedDict(zip([i for i in self.abil.keys()], [self.abil[i].get() for i in self.abil.keys()]))),
+			("Initiative", OrderedDict(zip([i for i in self.init.keys()], [self.init[i].get() for i in self.init.keys()]))),
+			("HP", self.hp.get()),
+			("AC", OrderedDict(zip([i for i in self.AC.keys()], [self.AC[i].get() for i in self.AC.keys()]))),
+			("Speed", self.speed.get()),
+			("Saving Throws", OrderedDict([
+				("Fortitude",OrderedDict(zip([i for i in self.fsave.keys()], [self.fsave[i].get() for i in self.fsave.keys()]))),
+				("Reflex",OrderedDict(zip([i for i in self.rsave.keys()], [self.rsave[i].get() for i in self.rsave.keys()]))),
+				("Will",OrderedDict(zip([i for i in self.wsave.keys()], [self.wsave[i].get() for i in self.wsave.keys()]))),
+			])),
+			("Base Attack Bonus", self.baseAtk.get()),
+			("Grapple", OrderedDict(zip([i for i in self.grapple.keys()], [self.grapple[i].get() for i in self.grapple.keys()]))),
+			("Spell Resistance", self.spellRes.get()),
+			("Damage Reduction", self.damagereduction.get()),
+			("Languages", self.languagelist),
+			("Special Abilities", self.LspecialsL['text'])
+		] )
+	
 	def draw(self):
 		self.root.title("Character Creator")
 		self.root.geometry("850x650")
@@ -151,7 +190,7 @@ class CharacterCreator(object):
 		self.CMBclass = ttk.Combobox(self.root, width=12, values=self.char.classList, textvariable=self.Class)
 		self.CMBalign = ttk.Combobox(self.root, width=18, values=self.char.align, textvariable=self.align)
 		self.CMBlevel = ttk.Combobox(self.root, width=6,  values=self.levelList)
-		self.Edeity = Entry(self.root, width=12)
+		self.Edeity = Entry(self.root, width=12, textvariable=self.deity)
 
 		# Place Line 2 on Grid
 		self.Lclass.grid(  row=1, column=0, sticky=EW)
@@ -277,7 +316,7 @@ class CharacterCreator(object):
 		self.EflatAC.grid( row=7, column=9, sticky=N+S+W)
 		
 		self.Bdamred = Button(self.root, relief=GROOVE, anchor=E, text="Damage Reduction")
-		self.Ldamred = Entry(self.root, width=12)
+		self.Ldamred = Entry(self.root, width=12, textvariable=self.damagereduction)
 		
 		self.Bdamred.grid(row=7, column=11, columnspan=3, sticky=E)
 		self.Ldamred.grid(row=7, column=14, columnspan=2, sticky=NSEW)
@@ -477,7 +516,7 @@ class CharacterCreator(object):
 		self.BresetLang.grid(row=29, column=7, columnspan=2)
 	
 	def drawSaveLoadCharacter(self):
-		BsaveCharacter = Button(self.root, text="Save Character", command=self.saveChar)
+		BsaveCharacter = Button(self.root, text="Save Character", command= lambda: sl.saveChar(self.GetCharacterDict()))
 		BloadCharacter = Button(self.root, text="Load Character", command=self.loadChar)
 		
 		BsaveCharacter.grid(row=20, column=12, columnspan=2)
@@ -773,9 +812,8 @@ class CharacterCreator(object):
 	def nameChange(self, *args):
 		name = self.Names['CharName'].get()
 		# currently changes regardless of if name already exists
-		fstruct.onNameChange(name)
-		
-	
+		fstruct.onNameChange(name)	
+	'''
 	def saveChar(self):
 		opts = {}
 		opts['defaultextension'] ='.dnd'
@@ -803,14 +841,16 @@ class CharacterCreator(object):
 				save.write(fstruct.SKILLPICKLE, os.path.basename(fstruct.SKILLPICKLE))
 			if os.path.isfile(fstruct.FEATPICKLE):
 				save.write(fstruct.FEATPICKLE, os.path.basename(fstruct.FEATPICKLE))
-			
+	'''		
 	def loadChar(self):
 		file = tkf.askopenfilename()
 		with open(file, 'r') as infile:
 			d = json.load(infile)
 			for item in d.keys():
-				print d[item]
-				print type(d[item])
+				#print item
+				#print d[item]
+				#print type(d[item])
+				self.charInfo[item].set(d[item])
 		
 	def clickd(self, *args):
 		if self.char.size:
