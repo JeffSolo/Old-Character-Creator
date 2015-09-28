@@ -3,6 +3,7 @@ import tkFileDialog as tkf
 import os, json, ttk
 from collections import OrderedDict
 import tkMessageBox as msg
+import zipfile as zf
 import AbilityRoller as roller
 import filestructure as fstruct
 from Character import Character
@@ -771,20 +772,17 @@ class CharacterCreator(object):
 	
 	def nameChange(self, *args):
 		name = self.Names['CharName'].get()
-
-		# currently these three change regardless of if name already exists
+		# currently changes regardless of if name already exists
 		fstruct.onNameChange(name)
-		self.skillpickle = fstruct.SKILLPICKLE
-		self.featpickle = fstruct.FEATPICKLE
 		
 	
 	def saveChar(self):
 		opts = {}
 		opts['defaultextension'] ='.dnd'
 		opts['initialdir'] = fstruct.CPATH
-		opts['initialfile'] = fstruct.NAME
-		
-		file = tkf.asksaveasfilename(**opts)
+		opts['initialfile'] = fstruct.NAME		
+		savefile = tkf.asksaveasfilename(**opts)
+		charfile = os.path.splitext(savefile)[0]+".char"
 		data = OrderedDict( [
 			("Player Name", self.Names["PlayerName"].get()),
 			("Character Name", self.Names["CharName"].get()),
@@ -792,9 +790,20 @@ class CharacterCreator(object):
 			("Race", self.Race.get()),
 			("Character info", OrderedDict(zip([i for i in self.charInfo], [self.charInfo[i].get() for i in self.charInfo.keys()])) )
 		] )
-		with open(file, 'w+') as outfile:
+		
+		with open(charfile, 'w+') as outfile:
 			json.dump(data, outfile, indent=4, separators=(',', ': '))
+			
+		self.zipSave(savefile, charfile)
 	
+	def zipSave(self, savefile, charfile):
+		with zf.ZipFile(savefile, 'w') as save:
+			save.write(charfile, os.path.basename(charfile))
+			if os.path.isfile(fstruct.SKILLPICKLE):
+				save.write(fstruct.SKILLPICKLE, os.path.basename(fstruct.SKILLPICKLE))
+			if os.path.isfile(fstruct.FEATPICKLE):
+				save.write(fstruct.FEATPICKLE, os.path.basename(fstruct.FEATPICKLE))
+			
 	def loadChar(self):
 		file = tkf.askopenfilename()
 		with open(file, 'r') as infile:
