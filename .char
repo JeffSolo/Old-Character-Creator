@@ -1,0 +1,104 @@
+{
+    "Player Name": "", 
+    "Character Name": "qwe", 
+    "Class": "", 
+    "Race": "Half_Orc", 
+    "Level": 0, 
+    "Alignment": "", 
+    "Deity": "", 
+    "Character Description": {
+        "size": "M", 
+        "age": "", 
+        "gender": "", 
+        "height": "", 
+        "weight": "", 
+        "eyes": "", 
+        "hair": "", 
+        "skin": ""
+    }, 
+    "Abilities": {
+        "DEX": "", 
+        "CHA": "", 
+        "INT": "8", 
+        "WIS": "", 
+        "STR": "", 
+        "CON": ""
+    }, 
+    "Initiative": {
+        "total": "", 
+        "misc": ""
+    }, 
+    "HP": "", 
+    "AC": {
+        "flat": "10", 
+        "shield": "", 
+        "armor": "", 
+        "misc": "", 
+        "deflect": "", 
+        "nat": "", 
+        "touch": "10", 
+        "total": "10", 
+        "size": "0"
+    }, 
+    "Speed": 30, 
+    "Saving Throws": {
+        "Fortitude": {
+            "misc": "", 
+            "total": "", 
+            "magic": "", 
+            "base": ""
+        }, 
+        "Reflex": {
+            "misc": "", 
+            "total": "", 
+            "magic": "", 
+            "base": ""
+        }, 
+        "Will": {
+            "misc": "", 
+            "total": "", 
+            "magic": "", 
+            "base": ""
+        }
+    }, 
+    "Base Attack Bonus": "", 
+    "Grapple": {
+        "total": "0", 
+        "misc": "", 
+        "size": "0"
+    }, 
+    "Spell Resistance": "", 
+    "Damage Reduction": "", 
+    "Languages": {
+        "Known": [
+            "Common", 
+            "Orc"
+        ], 
+        "Bonus": "Bonus Lang: -1"
+    }, 
+    "Special Abilities": [
+        ""
+    ], 
+    "miscellaneous": {
+        "rollVal": "10  10  14  15  15  18  ", 
+        "unroll": {
+            "INT": 10
+        }, 
+        "languageCMB": [
+            "Draconic", 
+            "Goblin", 
+            "Giant", 
+            "Gnoll", 
+            "Infernal"
+        ], 
+        "abilityCMB": [
+            10, 
+            14, 
+            15, 
+            15, 
+            18, 
+            ""
+        ], 
+        "alignCMB": ""
+    }
+}

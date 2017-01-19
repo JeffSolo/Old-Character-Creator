@@ -100,6 +100,8 @@ class CharacterCreator(object):
 		self.rollList = []
 		self.backupRollList = []
 		self.rollval = StringVar()
+		self.customRoll = BooleanVar()
+		self.customRoll.set(False)
 		
 		self.languagelist = []
 		self.langcount = 0
@@ -112,7 +114,7 @@ class CharacterCreator(object):
 		self.levelList = range(1,21)
 		
 		self.GetCharacterDict()
-		
+				
 	def GetCharacterDict(self):
 		return OrderedDict( [
 			("Player Name", self.Names["PlayerName"].get()),
@@ -140,6 +142,34 @@ class CharacterCreator(object):
 			("Languages", self.languagelist),
 			("Special Abilities", self.LspecialsL['text'])
 		] )
+		'''
+	def CharacterInfoList(self):
+		return [
+			self.Names
+			self.Class
+			self.Race
+			self.level
+			self.align
+			self.deity
+			self.charInfo
+			self.abil
+			self.init
+			self.hp
+			self.speed
+			self.fsave
+			self.rsave
+			self.wsave
+			self.baseAtk
+			self.grapple
+			self.spellRes
+			self.damagereduction
+			self.languagelist
+			self.LspecialsL
+			self.spellCaster
+		]
+		
+	def SetCharDict(self):
+		'''
 	
 	def draw(self):
 		self.root.title("Character Creator")
@@ -246,12 +276,15 @@ class CharacterCreator(object):
 	
 	def drawRoll(self):
 		# Create and Place Roll button
-		self.Broll = Button(self.root, text="Roll Abilities", command=self.customRoll)
+		self.Broll = Button(self.root, text="Roll Abilities", command=self.autoRoll)
 		self.Broll.grid(row=10, column=0, columnspan=2)		
 		self.BrollDefault = Button(self.root, text="Default", width=6, command=self.defaultRoll)
 		self.BrollDefault.grid(row=10, column=2)
+		self.CBcustom = Checkbutton(self.root, text='Custom', variable=self.customRoll, command=self.customRollToggle)
+		self.CBcustom.grid(row=10, column=3)
 		self.roll = Label(self.root, width=18, state=DISABLED, textvariable=self.rollval)
 		self.roll.grid(row=11, column=0, columnspan=3)
+	
 	
 	def drawHP(self):
 		self.Bhp = Button(self.root, relief=GROOVE, anchor=E, text="HP", command=PopUp().Bhp)
@@ -516,8 +549,8 @@ class CharacterCreator(object):
 		self.BresetLang.grid(row=29, column=7, columnspan=2)
 	
 	def drawSaveLoadCharacter(self):
-		BsaveCharacter = Button(self.root, text="Save Character", command= lambda: sl.saveChar(self.GetCharacterDict()))
-		BloadCharacter = Button(self.root, text="Load Character", command=self.loadChar)
+		BsaveCharacter = Button(self.root, text="Save Character", command= lambda: sl.saveChar(self))
+		BloadCharacter = Button(self.root, text="Load Character", command= lambda: sl.loadChar(self))
 		
 		BsaveCharacter.grid(row=20, column=12, columnspan=2)
 		BloadCharacter.grid(row=22, column=12, columnspan=2)
@@ -546,9 +579,19 @@ class CharacterCreator(object):
 		self.rollList=[10, 12, 14, 14, 16, 18]
 		self.onRoll()
 		
-	def customRoll(self):
+	def autoRoll(self):
 		self.rollList = roller.roll(1, 1, 1)
 		self.onRoll()
+		
+	def customRollToggle(self):
+		self.rollList = []
+		self.onRoll()
+		if self.customRoll.get():
+			self.Broll['state'] = 'disabled'
+			self.BrollDefault['state'] = 'disabled'
+		else:
+			self.Broll['state'] = 'normal'
+			self.BrollDefault['state'] = 'normal'
 		
 	def onRoll(self):
 		self.rollList.append('')
@@ -601,9 +644,11 @@ class CharacterCreator(object):
 			val = self.abil[key].get()
 		else:
 			return
+			
+
 		if val.isdigit():
 			# lets you reselect a value without first setting to ''
-			if key in self.unrollDict.keys():
+			if key in self.unrollDict.keys() and not self.customRoll.get():
 				self.pushAbilList(key)
 			# removes from combobox and set modifier (with any racial bonus or detriment)
 			if key in self.char.traits.keys():
@@ -612,11 +657,13 @@ class CharacterCreator(object):
 				self.Mabil[key].set((int(val) + trait - 10) /2)
 			else: # if no racial bonus
 				self.Mabil[key].set((int(self.abil[key].get()) - 10) /2)
-			self.popAbilList(key, val)
+			
+			if not self.customRoll.get():
+				self.popAbilList(key, val)
 
-		else:
+		elif not self.customRoll.get():
 			self.pushAbilList(key)
-		
+	
 		if key == 'CON':
 			self.updateHP()
 			self.updateSaves()
@@ -658,8 +705,11 @@ class CharacterCreator(object):
 		
 	def abilBind(self):
 		for abil in self.CMBabil.keys():
+			self.CMBabil[abil].bind("<FocusOut>", self.makeLambda(abil))
+			self.CMBabil[abil].bind("<Return>", self.makeLambda(abil))
 			self.CMBabil[abil].bind("<<ComboboxSelected>>", self.makeLambda(abil))
-		
+			
+			
 	def makeLambda(self, skill):
 		return lambda event: self.updateAbilities(event, skill)
 		

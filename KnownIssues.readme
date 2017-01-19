@@ -1,0 +1,16 @@
+Manual inputs that aren't updating:
+Attributes,
+Initiative,
+Saving Throws,
+Grapple,
+
+Formatting issues:
+Adding Bonus Languages extends entire row vertically
+
+To be added:
+Load Character currently only imports some items
+Feats Page
+Spells Page
+Update all buttons for explanation
+Conditional Modifiers
+User input on skills page - blanks for Knowledge, Perform, Etc, custom skills
