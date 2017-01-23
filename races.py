@@ -11,8 +11,8 @@ class Races(object):
 			
 	def EmptyR(self):
 		self.race = None
-		self.language= None
-		self.bonusLang= None
+		self.language = None
+		self.bonusLang = []
 		self.traits = {}
 		self.size = None
 		self.speed= None

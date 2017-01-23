@@ -550,7 +550,7 @@ class CharacterCreator(object):
 	
 	def drawSaveLoadCharacter(self):
 		BsaveCharacter = Button(self.root, text="Save Character", command= lambda: sl.saveChar(self))
-		BloadCharacter = Button(self.root, text="Load Character", command= lambda: sl.loadChar(self))
+		BloadCharacter = Button(self.root, text="Load Character", command= lambda: self.loadChar())
 		
 		BsaveCharacter.grid(row=20, column=12, columnspan=2)
 		BloadCharacter.grid(row=22, column=12, columnspan=2)
@@ -651,12 +651,13 @@ class CharacterCreator(object):
 			if key in self.unrollDict.keys() and not self.customRoll.get():
 				self.pushAbilList(key)
 			# removes from combobox and set modifier (with any racial bonus or detriment)
-			if key in self.char.traits.keys():
+			if key not in self.char.traits.keys(): # if no racial bonus
+				self.updateAbilMod(key)
+				
+			else: # if racial bonus
 				trait = int(self.char.traits[key])
 				self.abil[key].set(int(val) + trait)
 				self.Mabil[key].set((int(val) + trait - 10) /2)
-			else: # if no racial bonus
-				self.Mabil[key].set((int(self.abil[key].get()) - 10) /2)
 			
 			if not self.customRoll.get():
 				self.popAbilList(key, val)
@@ -680,6 +681,9 @@ class CharacterCreator(object):
 			self.resetLanguages()
 			self.resetSkillsPage()
 		
+	def updateAbilMod(self, key):
+		self.Mabil[key].set((int(self.abil[key].get()) - 10) /2)
+	
 	def popAbilList(self, key, val):
 		self.unrollDict[key] = self.rollList.pop(self.rollList.index(int(val)))
 		for keyval in self.CMBabil.keys():
@@ -832,12 +836,13 @@ class CharacterCreator(object):
 		self.align.set('')
 		# set HP
 		self.LspecialsL['text'] = "\n".join(self.char.special)
-		if self.char.hitDie:
-			self.hp.set(self.char.hitDie)
 		if self.char.spellCaster:
 			self.Bspells['state'] = 'normal'
 		else:
 			self.Bspells['state'] = 'disabled'
+		if self.char.hitDie:
+			self.hp.set(self.char.hitDie)
+		
 		self.Bfeats['state'] = 'normal'
 		self.Bskills['state'] = 'normal'
 		self.fsave['base'].set(self.char.cfortSave)
@@ -893,6 +898,7 @@ class CharacterCreator(object):
 				save.write(fstruct.FEATPICKLE, os.path.basename(fstruct.FEATPICKLE))
 	'''		
 	def loadChar(self):
+		'''
 		file = tkf.askopenfilename()
 		with open(file, 'r') as infile:
 			d = json.load(infile)
@@ -901,6 +907,14 @@ class CharacterCreator(object):
 				#print d[item]
 				#print type(d[item])
 				self.charInfo[item].set(d[item])
+		self.updateAbilities('', [i for i in self.abil.keys()])
+		'''
+		sl.loadChar(self)
+		self.remakeClass()
+		for key in self.abil.keys():
+			self.updateAbilMod(key)	
+		
+		
 		
 	def clickd(self, *args):
 		if self.char.size:

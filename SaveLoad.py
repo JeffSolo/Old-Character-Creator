@@ -36,7 +36,7 @@ def zipSave(savefile, charfile):
 			save.write(fstruct.SKILLPICKLE, os.path.basename(fstruct.SKILLPICKLE))
 		if os.path.isfile(fstruct.FEATPICKLE):
 			save.write(fstruct.FEATPICKLE, os.path.basename(fstruct.FEATPICKLE))
-			
+
 def loadChar(obj):
 	opts = {}
 	opts['filetypes'] = [('dnd files', '.dnd')]
@@ -48,11 +48,13 @@ def loadChar(obj):
 	
 	info = unzipLoad(loadfile, charfile)
 	SetCharacterDict(obj, info)	
+	
 		
 def unzipLoad(loadfile, charfile):
 	with zf.ZipFile(loadfile, 'r') as loadf:
-		return json.load(loadf.open(os.path.basename(charfile)))
-		
+		x = json.load(loadf.open(os.path.basename(charfile)))
+		loadf.close()
+		return x
 			
 def GetCharacterDict(obj):
 	return OrderedDict( [
@@ -90,7 +92,11 @@ def GetCharacterDict(obj):
 			"unroll": obj.unrollDict,
 			"languageCMB": obj.CMBlang['values'],
 			#"traits": {zip([key for key in obj.traits.keys()],[obj.traits[key].get() for key in obj.traits.keys()])}
-			"traits": OrderedDict(zip([key for key in obj.traits.keys()],[obj.traits[key].get() for key in obj.traits.keys()]))
+			"traits": OrderedDict(zip([key for key in obj.traits.keys()],[obj.traits[key].get() for key in obj.traits.keys()])),
+			'customRoll': obj.customRoll.get(),
+			'Bfeats': obj.Bfeats['state'],
+			'Bskills': obj.Bskills['state'],
+			'Bspells': obj.Bspells['state']
 		})	
 	] )
 	
@@ -161,7 +167,15 @@ def setMisc(obj, miscDict):
 				#trait = int(self.char.traits[key])
 				#self.abil[key].set(int(val) + trait)
 				#self.Mabil[key].set((int(val) + trait - 10) /2)
-
+		elif key == 'customRoll':
+			obj.customRoll.set(miscDict[key])
+		elif key == 'Bfeats':
+			obj.Bfeats['state'] = miscDict[key]
+		elif key == 'Bskills':
+			obj.Bskills['state'] = miscDict[key]
+		elif key == 'Bspells':	
+			obj.Bspells['state'] = miscDict[key]
+			
 def setSpecial(obj, val):
 	obj.LspecialsL['text'] = '\n'.join(val)
 	
