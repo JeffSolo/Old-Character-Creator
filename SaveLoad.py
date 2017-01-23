@@ -139,7 +139,7 @@ def setDict(obj):
 
 
 def setMisc(obj, miscDict):	
-	for key in miscDict.keys():		
+	for key in miscDict.keys():
 		if key == "alignCMB":
 			obj.CMBalign['values'] =  miscDict[key]
 		elif key == "rollVal":
@@ -154,7 +154,7 @@ def setMisc(obj, miscDict):
 			obj.CMBlang['values'] = miscDict[key]
 		elif key == "traits":
 			for a in obj.abil.keys():
-				obj.traits[a].set(miscDict[a])
+				obj.traits[a].set(miscDict['traits'][a])
 				
 				#from GUI
 				#if key in self.char.traits.keys():

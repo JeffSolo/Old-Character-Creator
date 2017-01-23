@@ -1,8 +1,12 @@
 Manual inputs that aren't updating:
-Attributes,
+#Attributes - Fixed!
 Initiative,
 Saving Throws,
 Grapple,
+Load Character not loading everything
+Load Character creates default character whether or not save is set, creating lots of folders
+Custom attributes will keep applying racial traits as often as 'RETURN' is pressed
+After LoadChar, modifiers are not automatically updated (they stay blank)
 
 Formatting issues:
 Adding Bonus Languages extends entire row vertically
@@ -14,3 +18,4 @@ Spells Page
 Update all buttons for explanation
 Conditional Modifiers
 User input on skills page - blanks for Knowledge, Perform, Etc, custom skills
+Changing class or race clears all attributes rather than recalculating
