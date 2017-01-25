@@ -1,21 +1,26 @@
+Items preceded by hashtags are fixed (hopefully)
+
 Manual inputs that aren't updating:
-#Attributes - Fixed!
+#Attributes 
 Initiative,
 Saving Throws,
 Grapple,
-Load Character not loading everything
+Load Character not loading everything [initiative, etc]
 Load Character creates default character whether or not save is set, creating lots of folders
-Custom attributes will keep applying racial traits as often as 'RETURN' is pressed
-After LoadChar, modifiers are not automatically updated (they stay blank)
+Custom attributes will keep applying racial traits as often as 'RETURN' is pressed, and also when focus leaves
+#After LoadChar, modifiers are not automatically updated (they stay blank)
+When you assign too many skill points it just autoresets everything to 0 
+Throws error on load when Mabil is set to '' (since not int)
 
 Formatting issues:
 Adding Bonus Languages extends entire row vertically
 
 To be added:
+Conditional Modifiers
 Load Character currently only imports some items
 Feats Page
 Spells Page
 Update all buttons for explanation
-Conditional Modifiers
 User input on skills page - blanks for Knowledge, Perform, Etc, custom skills
 Changing class or race clears all attributes rather than recalculating
+Add level up button to start from ground up

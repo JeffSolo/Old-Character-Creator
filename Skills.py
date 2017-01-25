@@ -1,6 +1,6 @@
 from Tkinter import *
-import Tkinter as tk
 import ttk, os, pickle
+import Tkinter as tk
 import tkMessageBox as msg
 import filestructure as fstruct
 from PopUp import PopUp
@@ -117,12 +117,15 @@ class Skills(object):
 	
 	def loadSP(self):
 		# load pickle file 
+		flag = False
 		if os.path.isfile(fstruct.SKILLPICKLE):
 			with open(fstruct.SKILLPICKLE, "rb") as f:
 				pdict = pickle.load(f)
+	
 			for key in pdict.keys():
 				self.Ranks[key].set(pdict[key])
 				self.updateSkills(key, None)
+			
 				
 		
 	def draw(self):

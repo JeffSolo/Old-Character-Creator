@@ -1,9 +1,12 @@
 #saveload
-import os, json
+import os, json, pickle
 import zipfile as zf
 import tkFileDialog as tkf
 import filestructure as fstruct
 from collections import OrderedDict
+from Skills import Skills
+
+LOADFILE = None
 
 def saveChar(obj):
 	char = GetCharacterDict(obj)
@@ -38,18 +41,32 @@ def zipSave(savefile, charfile):
 			save.write(fstruct.FEATPICKLE, os.path.basename(fstruct.FEATPICKLE))
 
 def loadChar(obj):
+	loadfile = getCharFiles()
+	charfile = os.path.splitext(loadfile)[0]+".char"
+	info = unzipLoad(loadfile, charfile)
+	SetCharacterDict(obj, info)	
+	
+def getCharFiles():
+	global LOADFILE
+	
 	opts = {}
 	opts['filetypes'] = [('dnd files', '.dnd')]
 	opts['defaultextension'] = '.dnd'
 	opts['initialfile'] = fstruct.NAME
 	opts['initialdir'] = fstruct.CPATH
-	loadfile = tkf.askopenfilename(**opts)
-	charfile = os.path.splitext(loadfile)[0]+".char"
 	
-	info = unzipLoad(loadfile, charfile)
-	SetCharacterDict(obj, info)	
+	if not LOADFILE:
+		LOADFILE = tkf.askopenfilename(**opts)
+	return LOADFILE
 	
-		
+def getSkills():
+	skillsfile = "skills.p"	
+	unzipSkills(getCharFiles(), skillsfile)
+	
+def unzipSkills(loadfile, file):
+		zf.ZipFile(loadfile, 'r').extract(file, os.path.dirname(loadfile))
+		fstruct.SKILLPICKLE = os.path.abspath(os.path.dirname(loadfile)+'/'+file)
+
 def unzipLoad(loadfile, charfile):
 	with zf.ZipFile(loadfile, 'r') as loadf:
 		x = json.load(loadf.open(os.path.basename(charfile)))

@@ -682,7 +682,8 @@ class CharacterCreator(object):
 			self.resetSkillsPage()
 		
 	def updateAbilMod(self, key):
-		self.Mabil[key].set((int(self.abil[key].get()) - 10) /2)
+		if self.abil[key].get().isdigit():
+			self.Mabil[key].set((int(self.abil[key].get()) - 10) /2)
 	
 	def popAbilList(self, key, val):
 		self.unrollDict[key] = self.rollList.pop(self.rollList.index(int(val)))
@@ -704,6 +705,8 @@ class CharacterCreator(object):
 		self.CMBclass.bind("<<ComboboxSelected>>", self.classSelect)
 		self.CMBlang.bind("<<ComboboxSelected>>", self.updateLanguages)
 		self.EcharName.bind("<FocusOut>", self.nameChange)
+		self.EcharName.bind("<Return>", self.nameChange)
+		self.EcharName.bind("<Leave>", self.nameChange)
 		self.acBind()
 		self.abilBind()
 		
@@ -866,6 +869,7 @@ class CharacterCreator(object):
 	
 	def nameChange(self, *args):
 		name = self.Names['CharName'].get()
+		print name
 		# currently changes regardless of if name already exists
 		fstruct.onNameChange(name)	
 	'''
@@ -912,8 +916,8 @@ class CharacterCreator(object):
 		sl.loadChar(self)
 		self.remakeClass()
 		for key in self.abil.keys():
-			self.updateAbilMod(key)	
-		
+			self.updateAbilMod(key)
+		sl.getSkills()
 		
 		
 	def clickd(self, *args):
