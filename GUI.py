@@ -264,7 +264,7 @@ class CharacterCreator(object):
 		for i, item in enumerate(abilityList):
 			Babil[item] = Button(self.root, text=item, relief=GROOVE, anchor=E, width=4) # command=PopUp().Bstr???
 			
-			self.CMBabil[item] = ttk.Combobox(self.root, width=4, textvariable=self.abil[item])
+			self.CMBabil[item] = ttk.Combobox(self.root, width=4, state='readonly', textvariable=self.abil[item])
 			EabilMod[item] = Entry(self.root, width=3, state=DISABLED, textvariable=self.Mabil[item])
 			self.Labilnote[item] = Label(self.root, width=6, textvariable=self.traits[item])
 			
@@ -589,9 +589,15 @@ class CharacterCreator(object):
 		if self.customRoll.get():
 			self.Broll['state'] = 'disabled'
 			self.BrollDefault['state'] = 'disabled'
+			for abil in self.CMBabil.keys():
+				self.CMBabil[abil]['state'] = 'normal'
+				
 		else:
 			self.Broll['state'] = 'normal'
 			self.BrollDefault['state'] = 'normal'
+			for abil in self.CMBabil.keys():
+				self.CMBabil[abil]['state'] = 'readonly'
+				
 		
 	def onRoll(self):
 		self.rollList.append('')
@@ -639,31 +645,34 @@ class CharacterCreator(object):
 			self.CMBlang['values'] = self.languagelist
 			self.langcount += 1
 	
-	def updateAbilities(self, args, key):
+	def updateAbilities(self, event, key):
+		#print event.type # 10 is leave, 2 is RETURN, 35 is comobox selected
 		if key:
 			val = self.abil[key].get()
 		else:
 			return
-			
 
-		if val.isdigit():
-			# lets you reselect a value without first setting to ''
-			if key in self.unrollDict.keys() and not self.customRoll.get():
+		trait = 0 # racial ability bonus
+		if key in self.char.traits.keys():
+			trait = int(self.char.traits[key])
+					
+		if not self.customRoll.get() and (event.type == '35' or event.type == '4'):
+			if val.isdigit():
+					
+					# lets you reselect a value without first setting to ''
+					if event.type == '4':
+						if key in self.unrollDict.keys():
+							self.pushAbilList(key)
+					
+					else:
+						# removes from combobox and set modifier (with any racial bonus or detriment)
+						self.popAbilList(key, val)
+						self.abil[key].set(int(val) + trait)
+			else:
 				self.pushAbilList(key)
-			# removes from combobox and set modifier (with any racial bonus or detriment)
-			if key not in self.char.traits.keys(): # if no racial bonus
-				self.updateAbilMod(key)
 				
-			else: # if racial bonus
-				trait = int(self.char.traits[key])
-				self.abil[key].set(int(val) + trait)
-				self.Mabil[key].set((int(val) + trait - 10) /2)
-			
-			if not self.customRoll.get():
-				self.popAbilList(key, val)
-
-		elif not self.customRoll.get():
-			self.pushAbilList(key)
+		
+		self.updateAbilMod(key)
 	
 		if key == 'CON':
 			self.updateHP()
@@ -712,9 +721,10 @@ class CharacterCreator(object):
 		
 	def abilBind(self):
 		for abil in self.CMBabil.keys():
+			self.CMBabil[abil].bind("<<ComboboxSelected>>", self.makeLambda(abil))
+			self.CMBabil[abil].bind("<Button-1>", self.makeLambda(abil))
 			self.CMBabil[abil].bind("<FocusOut>", self.makeLambda(abil))
 			self.CMBabil[abil].bind("<Return>", self.makeLambda(abil))
-			self.CMBabil[abil].bind("<<ComboboxSelected>>", self.makeLambda(abil))
 			
 			
 	def makeLambda(self, skill):
@@ -869,7 +879,6 @@ class CharacterCreator(object):
 	
 	def nameChange(self, *args):
 		name = self.Names['CharName'].get()
-		print name
 		# currently changes regardless of if name already exists
 		fstruct.onNameChange(name)	
 	'''
@@ -916,7 +925,7 @@ class CharacterCreator(object):
 		sl.loadChar(self)
 		self.remakeClass()
 		for key in self.abil.keys():
-			self.updateAbilMod(key)
+			self.updateAbilities(None,key)
 		sl.getSkills()
 		
 		
