@@ -37,6 +37,7 @@ class CharacterCreator(object):
 		
 		self.speed = IntVar()
 		self.level = IntVar()
+		self.level.set(1)
 		
 		self.LspecialsL = {}
 		self.LspecialsL['text'] = ''
@@ -111,8 +112,9 @@ class CharacterCreator(object):
 		self.grapple['misc'] = StringVar()
 		self.grapple['size'] = StringVar()
 		
-		self.levelList = range(1,21)
+		self.levelList = 1
 		
+		self.savesMods = StringVar()
 		self.GetCharacterDict()
 				
 	def GetCharacterDict(self):
@@ -219,14 +221,14 @@ class CharacterCreator(object):
 		self.CMBrace = ttk.Combobox( self.root, width=12, values=self.char.raceList, textvariable=self.Race)
 		self.CMBclass = ttk.Combobox(self.root, width=12, values=self.char.classList, textvariable=self.Class)
 		self.CMBalign = ttk.Combobox(self.root, width=18, values=self.char.align, textvariable=self.align)
-		self.CMBlevel = ttk.Combobox(self.root, width=6,  values=self.levelList)
+		self.Elevel = Entry(self.root, width=6,  textvariable=self.level, justify='center', state='disabled')
 		self.Edeity = Entry(self.root, width=12, textvariable=self.deity)
 
 		# Place Line 2 on Grid
 		self.Lclass.grid(  row=1, column=0, sticky=EW)
 		self.CMBclass.grid(row=1, column=1, sticky=EW, columnspan=2)
 		self.Llevel.grid(  row=1, column=3, sticky=EW)
-		self.CMBlevel.grid(row=1, column=4, sticky=EW)
+		self.Elevel.grid(row=1, column=4, sticky=EW)
 		self.Lrace.grid(   row=1, column=5, sticky=EW)
 		self.CMBrace.grid( row=1, column=6, sticky=EW, columnspan=2)
 		self.Lalign.grid(  row=1, column=8, sticky=EW,columnspan=2)
@@ -242,7 +244,7 @@ class CharacterCreator(object):
 		L, E = {}, {}
 		for i, label in enumerate(self.charInfo.keys()):
 			L[label] = Label(self.root, relief=GROOVE, anchor='e', width=6, text=label.capitalize()+":")
-			E[label] = Entry(self.root, width=6, textvariable=self.charInfo[label])
+			E[label] = Entry(self.root, width=6, textvariable=self.charInfo[label],justify='center')
 			
 			L[label].grid(row=2, column=i*2, sticky=EW)
 			E[label].grid(row=2, column=i*2+1, sticky=EW)
@@ -462,8 +464,8 @@ class CharacterCreator(object):
 		self.Lwplus3.grid(row=15, column=6, sticky=E)
 		self.Ewmisc.grid( row=15, column=7, sticky=W)
 		
-		self.INSERT = Label(self.root, text="INSERT CONDITIONAL MODIFIERS HERE!\n")
-		self.INSERT.grid(row=16, column=1, columnspan=6, rowspan=2)
+		self.LsavesCond = Label(self.root, textvariable=self.savesMods)
+		self.LsavesCond.grid(row=16, column=1, columnspan=8, rowspan=2)
 		
 	def drawAttackBSpellR(self):
 		self.BbaseAtk =     Button(self.root, relief=GROOVE, width=14, text="Base Attack Bonus")
@@ -836,6 +838,7 @@ class CharacterCreator(object):
 			self.traits[key].set(str(self.char.traits[key]) + " (Race)")
 			
 		self.grapple['size'].set(self.char.grappleMod)
+		self.savesMods.set('\n'.join(self.char.savesConditions))
 		
 		self.updateAC()
 		self.updateline3
@@ -866,7 +869,7 @@ class CharacterCreator(object):
 		self.updateSaves()
 		self.updateline2()
 		self.updateGrapple()
-		self.resetAbil()
+		#self.resetAbil()
 		self.resetSkillsPage()
 			
 	def remakeClass(self):
@@ -881,47 +884,9 @@ class CharacterCreator(object):
 		name = self.Names['CharName'].get()
 		# currently changes regardless of if name already exists
 		fstruct.onNameChange(name)	
-	'''
-	def saveChar(self):
-		opts = {}
-		opts['defaultextension'] ='.dnd'
-		opts['initialdir'] = fstruct.CPATH
-		opts['initialfile'] = fstruct.NAME		
-		savefile = tkf.asksaveasfilename(**opts)
-		charfile = os.path.splitext(savefile)[0]+".char"
-		data = OrderedDict( [
-			("Player Name", self.Names["PlayerName"].get()),
-			("Character Name", self.Names["CharName"].get()),
-			("Class", self.Class.get()), 
-			("Race", self.Race.get()),
-			("Character info", OrderedDict(zip([i for i in self.charInfo], [self.charInfo[i].get() for i in self.charInfo.keys()])) )
-		] )
-		
-		with open(charfile, 'w+') as outfile:
-			json.dump(data, outfile, indent=4, separators=(',', ': '))
-			
-		self.zipSave(savefile, charfile)
-	
-	def zipSave(self, savefile, charfile):
-		with zf.ZipFile(savefile, 'w') as save:
-			save.write(charfile, os.path.basename(charfile))
-			if os.path.isfile(fstruct.SKILLPICKLE):
-				save.write(fstruct.SKILLPICKLE, os.path.basename(fstruct.SKILLPICKLE))
-			if os.path.isfile(fstruct.FEATPICKLE):
-				save.write(fstruct.FEATPICKLE, os.path.basename(fstruct.FEATPICKLE))
-	'''		
+
 	def loadChar(self):
-		'''
-		file = tkf.askopenfilename()
-		with open(file, 'r') as infile:
-			d = json.load(infile)
-			for item in d.keys():
-				#print item
-				#print d[item]
-				#print type(d[item])
-				self.charInfo[item].set(d[item])
-		self.updateAbilities('', [i for i in self.abil.keys()])
-		'''
+
 		sl.loadChar(self)
 		self.remakeClass()
 		for key in self.abil.keys():

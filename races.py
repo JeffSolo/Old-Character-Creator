@@ -28,6 +28,7 @@ class Races(object):
 		self.FortSave = None
 		self.WillSave = None
 		self.grappleMod = 0
+		self.savesConditions = []
 		
 	def Elf(self):
 		self.Race = "Elf"
@@ -37,7 +38,7 @@ class Races(object):
 		self.size = 'M'
 		self.ACsize = 0
 		self.AttackBonus = None
-		self.speed=30
+		self.speed = 30
 		self.favClass="Wizard"
 		self.bonusSkills={"Listen":2, "Search":2, "Spot":2}
 		self.bonusFeat = None
@@ -45,6 +46,7 @@ class Races(object):
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None
+		self.savesConditions = ["+2 racial bonus on saving throws against Enchantment spells or effects"]
 		
 	def Dwarf(self):
 		self.Race = "Dwarf"
@@ -62,6 +64,7 @@ class Races(object):
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None
+		self.savesConditions = ["+2 racial bonus on saving throws against poison"]
 		
 	def Human(self):
 		self.Race = "Human"
@@ -82,6 +85,7 @@ class Races(object):
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None
+		self.savesConditions = []
 		
 	def Gnome(self):
 		self.Race = "Gnome"
@@ -99,6 +103,7 @@ class Races(object):
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None
+		self.savesConditions = ["+2 racial bonus on throws against illusions"]
 		
 	def Half_Elf(self):
 		self.Race = "Half-Elf"
@@ -118,6 +123,7 @@ class Races(object):
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None
+		self.savesConditions = []
 		
 	def Half_Orc(self):
 		self.Race = "Half-Orc"
@@ -135,6 +141,7 @@ class Races(object):
 		self.ReflexSave = None
 		self.FortSave = None
 		self.WillSave = None
+		self.savesConditions = []
 		
 	def Halfling(self):
 		self.Race = "Halfling"
@@ -152,3 +159,4 @@ class Races(object):
 		self.ReflexSave = 1
 		self.FortSave = 1
 		self.WillSave = 1
+		self.savesConditions = ["+2 morale bonus on saving throws against fear"]
