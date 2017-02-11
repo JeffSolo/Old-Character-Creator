@@ -1,5 +1,6 @@
 from Tkinter import *
 import tkFileDialog as tkf
+import tkFont
 import os, json, ttk
 from collections import OrderedDict
 import tkMessageBox as msg
@@ -12,6 +13,7 @@ from PopUp import PopUp
 from Skills import Skills
 from Spells import Spells
 from feats import Feats
+from time import sleep
 
 
 
@@ -112,10 +114,12 @@ class CharacterCreator(object):
 		self.grapple['misc'] = StringVar()
 		self.grapple['size'] = StringVar()
 		
-		self.levelList = 1
+		#self.levelList = 1
 		
 		self.savesMods = StringVar()
 		self.GetCharacterDict()
+		
+		#self.canLevel = False # do we meet the requirements to level up yet (set everything?)
 				
 	def GetCharacterDict(self):
 		return OrderedDict( [
@@ -221,14 +225,17 @@ class CharacterCreator(object):
 		self.CMBrace = ttk.Combobox( self.root, width=12, values=self.char.raceList, textvariable=self.Race)
 		self.CMBclass = ttk.Combobox(self.root, width=12, values=self.char.classList, textvariable=self.Class)
 		self.CMBalign = ttk.Combobox(self.root, width=18, values=self.char.align, textvariable=self.align)
-		self.Elevel = Entry(self.root, width=6,  textvariable=self.level, justify='center', state='disabled')
 		self.Edeity = Entry(self.root, width=12, textvariable=self.deity)
+		
+		self.Blevelup = Label(self.root, width=2, text="+", justify='center', relief='raised') # label that acts like button since button wouldn't fit here
+		self.Elevel = Entry(self.root, width=4,textvariable=self.level, justify='center', state='disabled')
 
 		# Place Line 2 on Grid
 		self.Lclass.grid(  row=1, column=0, sticky=EW)
 		self.CMBclass.grid(row=1, column=1, sticky=EW, columnspan=2)
 		self.Llevel.grid(  row=1, column=3, sticky=EW)
-		self.Elevel.grid(row=1, column=4, sticky=EW)
+		self.Blevelup.grid(row=1, column=4,sticky=E,padx=(0,2))
+		self.Elevel.grid(  row=1, column=4,sticky=W)
 		self.Lrace.grid(   row=1, column=5, sticky=EW)
 		self.CMBrace.grid( row=1, column=6, sticky=EW, columnspan=2)
 		self.Lalign.grid(  row=1, column=8, sticky=EW,columnspan=2)
@@ -238,7 +245,7 @@ class CharacterCreator(object):
 		
 	def updateline2(self):
 		self.CMBalign['values'] = self.char.align
-			
+
 	def drawline3(self):
 		#Create Third Line Objects
 		L, E = {}, {}
@@ -718,26 +725,49 @@ class CharacterCreator(object):
 		self.EcharName.bind("<FocusOut>", self.nameChange)
 		self.EcharName.bind("<Return>", self.nameChange)
 		self.EcharName.bind("<Leave>", self.nameChange)
+		self.miscBind()
 		self.acBind()
 		self.abilBind()
-		
+		self.levelupBind()
+
+	def miscBind(self):
+		self.EinitMisc.bind("<KeyRelease>", self.updateInit)
+		self.EgrapMisc.bind("<KeyRelease>", self.updateGrapple)
+		self.Efmagic.bind("<KeyRelease>", self.updateSaves)
+		self.Efmisc.bind("<KeyRelease>", self.updateSaves)
+		self.Ermagic.bind("<KeyRelease>", self.updateSaves)
+		self.Ermisc.bind("<KeyRelease>", self.updateSaves)
+		self.Ewmagic.bind("<KeyRelease>", self.updateSaves)
+		self.Ewmisc.bind("<KeyRelease>", self.updateSaves)
+	
 	def abilBind(self):
 		for abil in self.CMBabil.keys():
 			self.CMBabil[abil].bind("<<ComboboxSelected>>", self.makeLambda(abil))
 			self.CMBabil[abil].bind("<Button-1>", self.makeLambda(abil))
 			self.CMBabil[abil].bind("<FocusOut>", self.makeLambda(abil))
-			self.CMBabil[abil].bind("<Return>", self.makeLambda(abil))
+			self.CMBabil[abil].bind("<KeyRelease>", self.makeLambda(abil))
 			
-			
+		
 	def makeLambda(self, skill):
 		return lambda event: self.updateAbilities(event, skill)
+
+	def levelupBind(self):
+		self.Blevelup.bind("<Button-1>",self.buttonclick)
+		self.Blevelup.bind("<ButtonRelease-1>", self.buttonrelease)
+	
+	def buttonclick(self, event):
+		self.Blevelup['relief'] = 'sunken'
+		
+	def buttonrelease(self, event):
+		self.Blevelup['relief'] = 'raised'
+		self.levelUp()
 		
 	def acBind(self):
-		self.Eac2.bind("<Leave>", self.updateAC)
-		self.Eac3.bind("<Leave>", self.updateAC)
-		self.Eac6.bind("<Leave>", self.updateAC)
-		self.Eac7.bind("<Leave>", self.updateAC)
-		self.Eac8.bind("<Leave>", self.updateAC)
+		self.Eac2.bind("<KeyRelease>", self.updateAC)
+		self.Eac3.bind("<KeyRelease>", self.updateAC)
+		self.Eac6.bind("<KeyRelease>", self.updateAC)
+		self.Eac7.bind("<KeyRelease>", self.updateAC)
+		self.Eac8.bind("<KeyRelease>", self.updateAC)
 	
 	def updateAC(self, *args):
 		total = 10
@@ -762,15 +792,16 @@ class CharacterCreator(object):
 		if con.isdigit() and self.hp.get():
 			self.hp.set(int(self.char.hitDie) + int(con))
 			
-	def updateInit(self):
+	def updateInit(self, event=None):
 		total = 0
-		if self.init['misc'].get():
-			total += int(self.init['misc'].get())
 		if self.Mabil['DEX'].get():
 			total += int(self.Mabil['DEX'].get())
+		if self.init['misc'].get().isdigit():
+			self.init['misc'].get()
+			total += int(self.init['misc'].get())
 		self.init['total'].set(str(total))
 			
-	def updateGrapple(self):
+	def updateGrapple(self, *event):
 		# calculate grapple
 		total = 0
 		if self.baseAtk.get():
@@ -784,7 +815,7 @@ class CharacterCreator(object):
 		
 		self.grapple['total'].set(total)
 		
-	def updateSaves(self):
+	def updateSaves(self, *event):
 		#calculate fort save total
 		total = 0
 		for key in self.fsave.keys():
@@ -898,3 +929,10 @@ class CharacterCreator(object):
 		if self.char.size:
 			self.charInfo['size'].set(self.char.size)
 		#self.draw
+		
+	def levelUp(self):
+		def canLevel():
+			pass
+		
+		#if canLevel():
+		#	pass

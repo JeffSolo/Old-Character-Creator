@@ -1,33 +1,36 @@
 Items preceded by hashtags are fixed (hopefully)
 
-Manual inputs that aren't updating:
+#Manual inputs that aren't updating:
 #Attributes 
-Initiative,
+#Initiative,
 Saving Throws,
-Grapple,
+#Grapple,
 #Load Character not loading everything [initiative, etc]
 Program creates default character folder, so there may be hundreds of random folders
-Custom attributes will keep applying racial traits as often as 'RETURN' is pressed, and also when focus leaves
+#Custom attributes will keep applying racial traits as often as 'RETURN' is pressed, and also when focus leaves
 #After LoadChar, modifiers are not automatically updated (they stay blank)
 When you assign too many skill points it just autoresets everything to 0 
 Throws error on load when Mabil is set to '' (since not int)
 Throws error when you hit 'cancel' on load screen
+Changing class or race resets abilities....alternatives?
+Skills: Knowledge, Perform, Profession and the like currently don't take inputs for what kind
 
 Formatting issues:
 Adding Bonus Languages extends entire row vertically
 
 To be added:
-Conditional Modifiers
+#Conditional Modifiers
 Load Character currently only imports some items
 Feats Page
 Spells Page
 Update all buttons for explanation
 User input on skills page - blanks for Knowledge, Perform, Etc, custom skills
 Changing class or race clears all attributes rather than recalculating
-Add level up button to start from ground up
-Add "Recommend" button to autodivy up attributes
+#Add level up button to start from ground up
+Add "Recommend" button to autodivy up attributes?
 Add Leveling system, start at 1 and hit level up and go through steps - need warning to ensure all steps have been performed
 	Add way to upgrade single attributes every four levels,
 Add "Override" button so user can customize everything manually
+Add racial bonuses to skills
 
 

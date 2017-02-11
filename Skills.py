@@ -99,6 +99,7 @@ class Skills(object):
 		self.Lkeyabil = {}
 		self.EskillMod = {}
 		self.EabilMod =  {}
+		self.LclassMod =  {}
 		self.LEquals = {}
 		self.LPlusOne = {}
 		self.CMBranks = {}
@@ -113,19 +114,6 @@ class Skills(object):
 			self.MiscMod[key]	 = StringVar()
 			self.classSkill[key] = StringVar()
 		self.flag = False # used to check calcSP()
-		
-	
-	def loadSP(self):
-		# load pickle file 
-		flag = False
-		if os.path.isfile(fstruct.SKILLPICKLE):
-			with open(fstruct.SKILLPICKLE, "rb") as f:
-				pdict = pickle.load(f)
-	
-			for key in pdict.keys():
-				self.Ranks[key].set(pdict[key])
-				self.updateSkills(key, None)
-			
 				
 		
 	def draw(self):
@@ -172,6 +160,7 @@ class Skills(object):
 			self.CMBranks[item]		= ttk.Combobox(self.frame, width=5, values=self.UpdateRankList(item), textvariable=self.Ranks[item])
 			self.LPlusTwo[item]		= Label(self.frame,  width=2, text='+')
 			self.EmiscMod[item] 	= Entry(self.frame,  width=3, justify=CENTER, textvariable=self.MiscMod[item])
+			self.LclassMod[item]	= Label(self.frame, width=7, textvariable=self.getBonusSkills(item))
 			
 			#draw everything
 			self.CBskill[item].grid(	row = i+1, column=0, sticky=E+W)
@@ -184,18 +173,30 @@ class Skills(object):
 			self.CMBranks[item].grid(	row = i+1, column=7, sticky=E+W)
 			self.LPlusTwo[item].grid(	row = i+1, column=8, sticky=E+W)
 			self.EmiscMod[item].grid(	row = i+1, column=9, sticky=E+W)
+			self.LclassMod[item].grid(	row = i+1, column=11, sticky=E+W)
 	
+	def getBonusSkills(self, key):
+		x = StringVar()
+		if self.char.bonusSkills and key in self.char.bonusSkills:
+			val = self.char.bonusSkills[key]
+			if val > 0:
+				x.set("+"+str(val)+" (Race)")
+			elif val < 0:
+				x.set("-"+str(val)+" (Race)")
+		return x
+		
+				
 	def drawEmptyCol(self):
 		self.EmptyCol = Label(self.frame, width=5)
-		self.EmptyCol.grid(row=0, column=10)
+		self.EmptyCol.grid(row=0, column=12)
 		
 	def drawButtons(self):
 		self.Bclose = Button(self.frame, text="Save Close", command=self.saveClose)
 		self.Breset = Button(self.frame, text="Reset", command=self.reset)
 		#self.Bsave  = Button(self.frame, text="Save", command=self.save)
 		
-		self.Bclose.grid(row=1, column=12)
-		self.Breset.grid(row=2, column=12)
+		self.Bclose.grid(row=1, column=13)
+		self.Breset.grid(row=2, column=13)
 		#self.Bsave.grid( row=4, column=12)
 		
 	def drawSkillPointinfo(self):
@@ -205,10 +206,10 @@ class Skills(object):
 		self.Ltotalsp = Label(self.frame, width=6, textvariable=self.NumSP)
 		self.Lremainingsp = Label(self.frame, width=6, textvariable=self.RemaingingSP)
 		
-		self.Btotalsp.grid(row = 15, column=11)
-		self.Ltotalsp.grid(row = 16, column=11)
-		self.BspRemaining.grid(row = 17, column=11)
-		self.Lremainingsp.grid(row = 18, column=11)
+		self.Btotalsp.grid(row = 15, column=13)
+		self.Ltotalsp.grid(row = 16, column=13)
+		self.BspRemaining.grid(row = 17, column=13)
+		self.Lremainingsp.grid(row = 18, column=13)
 		
 	
 	def calcsp(self, *arg):
@@ -240,9 +241,10 @@ class Skills(object):
 			#self.updateSkills(skill, False)
 			
 	def save(self):
-		pickledict = {}
+		pickledict = {'Rank':{},'Misc':{}}
 		for skill in self.SkillSet:
-			pickledict[skill] = self.Ranks[skill].get()		
+			pickledict['Rank'][skill] = self.Ranks[skill].get()	
+			pickledict['Misc'][skill] = self.MiscMod[skill].get()
 			
 		with open(fstruct.SKILLPICKLE, "wb+") as f:
 			pickle.dump(pickledict, f)
@@ -254,6 +256,18 @@ class Skills(object):
 		self.save()
 		self.close()
 		
+	def loadSP(self):
+		# load pickle file 
+		flag = False
+		if os.path.isfile(fstruct.SKILLPICKLE):
+			with open(fstruct.SKILLPICKLE, "rb") as f:
+				pdict = pickle.load(f)
+	
+			for key in self.SkillSet:
+				self.Ranks[key].set(pdict['Rank'][key])
+				self.MiscMod[key].set(pdict['Misc'][key])
+				self.updateSkills(key, None)
+	
 	def setbind(self):
 		for skill in self.SkillSet:
 			self.canvas.bind_all("<Enter>", self.calcsp)
@@ -292,6 +306,8 @@ class Skills(object):
 			setval += int(self.Ranks[key].get())
 		if self.MiscMod[key].get().isdigit():
 			setval += int(self.MiscMod[key].get())
+		if self.char.bonusSkills and key in self.char.bonusSkills:
+			setval += self.char.bonusSkills[key]
 		if setval > 0:
 			self.TotalMod[key].set(setval)
 		else:

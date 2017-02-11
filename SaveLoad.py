@@ -113,10 +113,12 @@ def GetCharacterDict(obj):
 			'customRoll': obj.customRoll.get(),
 			'Bfeats': obj.Bfeats['state'],
 			'Bskills': obj.Bskills['state'],
-			'Bspells': obj.Bspells['state']
+			'Bspells': obj.Bspells['state'],
+			'canLevel': obj.canLevel
 		})	
 	] )
 	
+	# create race and class first and remake from there, then get user inputs?
 	## possible alignments CMB
 	## ability roller info, including list and CMBs
 	## include available language CMB
