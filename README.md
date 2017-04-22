@@ -10,3 +10,7 @@ and is an aid for filling out player sheets.
 In actually, it is mostly just a fun, selfish learning experiment for my own benefit - both creating
 simplistic GUI's in python and familiarizing myself with git.
  
+ Still very much a work-in-progress.
+ 
+ Usage:
+`python DND.py`
